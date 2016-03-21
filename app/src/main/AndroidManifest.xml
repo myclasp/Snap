@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.adriangradinar.snap">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".SnapApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/CustomActionBarTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".OverviewActivity"
+            android:label="@string/title_activity_overview"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DailyActivity"
+            android:label="@string/title_activity_daily"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WeekActivity"
+            android:label="@string/title_activity_week"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MonthActivity"
+            android:label="@string/title_activity_month"
+            android:screenOrientation="portrait" />
+
+        <service
+            android:name=".services.LocationService"
+            android:exported="false" />
+
+        <receiver android:name=".receivers.SnapReceiver">
+            <intent-filter>
+                <action android:name="snap.UpReceiver" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="snap.DownReceiver" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

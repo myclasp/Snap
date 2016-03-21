@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.adriangradinar.shapes.OverviewActivity">
+
+    <item
+        android:id="@+id/refresh"
+        android:title="Refresh"
+        android:orderInCategory="100"
+        android:icon="@drawable/refresh_icon"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/week_view"
+        android:title="7 Days"
+        android:orderInCategory="100"
+        android:icon="@drawable/calendar_icon_week_white"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/month_view"
+        android:title="Select Date"
+        android:orderInCategory="100"
+        android:icon="@drawable/calendar_icon_settings_white"
+        app:showAsAction="always" />
+
+</menu>

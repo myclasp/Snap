@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/week_view"
+        android:title="7 Days"
+        android:orderInCategory="100"
+        android:icon="@drawable/calendar_icon_week_white"
+        app:showAsAction="always" />
+
+</menu>

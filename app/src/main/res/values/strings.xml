@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Snap</string>
+    <string name="functionality_not_supported">Functionality not yet supported!</string>
+
+    <string name="title_activity_overview">Overview</string>
+    <string name="title_activity_week">Last 7 Days</string>
+    <string name="title_activity_month">Current Month</string>
+    <string name="title_activity_daily">...</string>
+</resources>

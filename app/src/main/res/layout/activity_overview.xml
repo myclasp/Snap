@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingPrefix"
+    android:id="@+id/final_layout"
+    android:background="@drawable/background_image">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Most Active Day"
+        android:id="@+id/textView1"
+        android:layout_marginLeft="5dp"
+        android:textSize="31sp"
+        android:textColor="@color/clasp_colour"
+        android:layout_alignTop="@+id/relativeLayout"
+        android:layout_toEndOf="@+id/relativeLayout"
+        android:layout_marginTop="-5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="544 actions"
+        android:id="@+id/tv_mad_actions"
+        android:textSize="26sp"
+        android:textColor="@color/dark_brown"
+        fontPath="fonts/Lato-Light.ttf"
+        android:layout_alignBottom="@+id/relativeLayout"
+        android:layout_alignStart="@+id/textView1"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Least Active Day"
+        android:id="@+id/textView2"
+        android:textSize="31sp"
+        android:textColor="@color/clasp_colour"
+        android:layout_alignTop="@+id/relativeLayout2"
+        android:layout_alignStart="@+id/tv_mad_actions"
+        android:layout_marginTop="-5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="544 actions"
+        android:id="@+id/tv_lad_actions"
+        android:textSize="26sp"
+        android:textColor="@color/dark_brown"
+        fontPath="fonts/Lato-Light.ttf"
+        android:layout_alignBottom="@+id/relativeLayout2"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Most Up Day"
+        android:id="@+id/textView3"
+        android:textSize="31sp"
+        android:textColor="@color/up_primary"
+        android:layout_alignTop="@+id/relativeLayout3"
+        android:layout_alignStart="@+id/tv_lad_actions"
+        android:layout_marginTop="-5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="544 actions"
+        android:id="@+id/tv_hd_actions"
+        android:textSize="26sp"
+        android:textColor="@color/dark_brown"
+        fontPath="fonts/Lato-Light.ttf"
+        android:layout_alignBottom="@+id/relativeLayout3"
+        android:layout_alignStart="@+id/textView3"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Most Down Day"
+        android:id="@+id/textView4"
+        android:textSize="31sp"
+        android:textColor="@color/down_primary"
+        android:layout_alignTop="@+id/relativeLayout4"
+        android:layout_alignStart="@+id/tv_hd_actions"
+        android:layout_marginTop="-5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="56 actions"
+        android:id="@+id/tv_sd_actions"
+        android:textSize="26sp"
+        android:textColor="@color/dark_brown"
+        fontPath="fonts/Lato-Light.ttf"
+        android:layout_alignBottom="@+id/relativeLayout4"
+        android:layout_alignStart="@+id/textView4"
+        android:layout_marginBottom="8dp" />
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:text="This week's stats"-->
+        <!--android:id="@+id/textView8"-->
+        <!--android:textSize="36sp"-->
+        <!--android:textColor="@color/clasp_colour"-->
+        <!--android:layout_above="@+id/tableLayout1"-->
+        <!--android:gravity="center_vertical|center_horizontal"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:visibility="invisible"/>-->
+
+    <!--<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:id="@+id/tableLayout1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_margin="5dp"-->
+        <!--android:visibility="invisible">-->
+
+        <!--<TableRow-->
+            <!--android:id="@+id/tableRow1"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1" >-->
+
+            <!--<Button-->
+                <!--android:id="@+id/mondayBtn"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:text="Mo"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="20sp"-->
+                <!--android:gravity="center_vertical|center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@drawable/button_accept" />-->
+
+            <!--<Space android:layout_width="2dp" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/tuesdayBtn"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:text="Tu"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="20sp"-->
+                <!--android:gravity="center_vertical|center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@drawable/button_accept" />-->
+
+            <!--<Space android:layout_width="2dp" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/wednesdayBtn"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:text="We"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="20sp"-->
+                <!--android:gravity="center_vertical|center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@drawable/button_accept"/>-->
+
+            <!--<Space android:layout_width="2dp" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/thursdayBtn"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:text="Th"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="20sp"-->
+                <!--android:gravity="center_vertical|center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@drawable/button_accept"/>-->
+
+            <!--<Space android:layout_width="2dp" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/fridayBtn"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:text="Fr"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="20sp"-->
+                <!--android:gravity="center_vertical|center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@drawable/button_accept"/>-->
+
+            <!--<Space android:layout_width="2dp" />-->
+
+            <!--<Button-->
+                <!--android:id="@+id/saturdayBtn"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:text="Sa"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="20sp"-->
+                <!--android:gravity="center_vertical|center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@drawable/button_accept"-->
+                <!--android:clickable="false"/>-->
+
+            <!--<Space android:layout_width="2dp"-->
+                <!--android:background="@drawable/button_accept"/>-->
+
+            <!--<Button-->
+                <!--android:id="@+id/sundayBtn"-->
+                <!--android:layout_height="fill_parent"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:text="Su"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="20sp"-->
+                <!--android:gravity="center_vertical|center_horizontal"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@drawable/button_accept"/>-->
+        <!--</TableRow>-->
+    <!--</TableLayout>-->
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
+        android:background="@drawable/calendar_icon_clasp_small"
+        android:id="@+id/relativeLayout"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="8dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="24dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Sept 15"
+            android:id="@+id/tv_mad_month"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/White"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="21"
+            android:id="@+id/tv_mad_day"
+            android:layout_below="@+id/tv_mad_month"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center|center_horizontal"
+            android:textSize="42dp"
+            android:textColor="@color/dark_brown" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
+        android:background="@drawable/calendar_icon_clasp_small"
+        android:id="@+id/relativeLayout2"
+        android:layout_below="@+id/tv_mad_actions"
+        android:layout_alignStart="@+id/relativeLayout"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="24dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Nov 15"
+            android:id="@+id/tv_lad_month"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/White"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="3"
+            android:id="@+id/tv_lad_day"
+            android:layout_below="@+id/tv_lad_month"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center|center_horizontal"
+            android:textSize="42dp"
+            android:textColor="@color/dark_brown" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
+        android:background="@drawable/calendar_icon_up_small"
+        android:id="@+id/relativeLayout3"
+        android:layout_below="@+id/relativeLayout2"
+        android:layout_alignStart="@+id/relativeLayout2"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="24dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Jan 15"
+            android:id="@+id/tv_hd_month"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/White"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="31"
+            android:id="@+id/tv_hd_day"
+            android:layout_below="@+id/tv_hd_month"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center|center_horizontal"
+            android:textSize="42dp"
+            android:textColor="@color/dark_brown" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
+        android:background="@drawable/calendar_icon_down_small"
+        android:id="@+id/relativeLayout4"
+        android:layout_below="@+id/tv_hd_actions"
+        android:layout_alignStart="@+id/relativeLayout3"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="24dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Jul 14"
+            android:id="@+id/tv_sd_month"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:textColor="@color/White"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="17"
+            android:id="@+id/tv_sd_day"
+            android:layout_below="@+id/tv_sd_month"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center|center_horizontal"
+            android:textSize="42dp"
+            android:textColor="@color/dark_brown" />
+    </RelativeLayout>
+
+</RelativeLayout>

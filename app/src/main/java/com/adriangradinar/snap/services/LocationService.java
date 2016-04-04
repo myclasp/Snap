@@ -15,14 +15,17 @@ import com.adriangradinar.snap.classes.Click;
 import com.adriangradinar.snap.utils.CustomExceptionHandler;
 import com.adriangradinar.snap.utils.DatabaseHandler;
 import com.adriangradinar.snap.utils.Utils;
+import com.birbit.android.jobqueue.Job;
+import com.birbit.android.jobqueue.JobManager;
+import com.birbit.android.jobqueue.Params;
+import com.birbit.android.jobqueue.RetryConstraint;
+import com.birbit.android.jobqueue.config.Configuration;
+import com.birbit.android.jobqueue.log.CustomLogger;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.path.android.jobqueue.Job;
-import com.path.android.jobqueue.JobManager;
-import com.path.android.jobqueue.Params;
 
 public class LocationService extends Service implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
@@ -165,7 +168,37 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
 
         if (intent != null && intent.hasExtra(LocationService.CLICK)) {
             if(jobManager == null){
-                jobManager = new JobManager(getApplicationContext());
+
+                //setup a configurator
+                Configuration.Builder builder = new Configuration.Builder(this)
+                        .customLogger(new CustomLogger() {
+                            private static final String TAG = "Jobs_on_presses!";
+                            @Override
+                            public boolean isDebugEnabled() {
+                                return true;
+                            }
+
+                            @Override
+                            public void d(String text, Object... args) {
+//                                Log.d(TAG, String.format(text, args));
+                            }
+
+                            @Override
+                            public void e(Throwable t, String text, Object... args) {
+                                Log.e(TAG, String.format(text, args), t);
+                            }
+
+                            @Override
+                            public void e(String text, Object... args) {
+                                Log.e(TAG, String.format(text, args));
+                            }
+                        })
+                        .minConsumerCount(1)//always keep at least one consumer alive
+                        .maxConsumerCount(3)//up to 3 consumers at a time
+                        .loadFactor(3)//3 jobs per consumer
+                        .consumerKeepAlive(120);//wait 2 minute
+                //add the configuration to the jobManager
+                jobManager = new JobManager(builder.build());
             }
             jobManager.addJobInBackground(new HandleRequests(new Click(intent.getExtras().getInt(LocationService.CLICK), Utils.getTimestamp())));
         }
@@ -244,7 +277,12 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
         @Override
         protected void onCancel(int cancelReason) {
             Log.e(TAG, "cancelled " + cancelReason);
-            super.onCancel(cancelReason);
+        }
+
+        @Override
+        protected RetryConstraint shouldReRunOnThrowable(Throwable throwable, int runCount, int maxRunCount) {
+            Log.e(TAG, "just in case this function is being called!!! - it's a re-run!!!");
+            return null;
         }
     }
 }

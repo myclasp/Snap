@@ -53,6 +53,8 @@
                 <action android:name="snap.DownReceiver" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".DeepAnalysisActivity" android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

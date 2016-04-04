@@ -89,6 +89,45 @@ public class Utils {
         return null;
     }
 
+    public static String convertStringToLongMonth(String month){
+        if(month.equals("Jan")) {
+            return "January";
+        }
+        else if(month.equals("Feb")) {
+            return "February";
+        }
+        else if(month.equals("Mar")) {
+            return "March";
+        }
+        else if(month.equals("Apr")) {
+            return "April";
+        }
+        else if(month.equals("May")) {
+            return "May";
+        }
+        else if(month.equals("Jun")) {
+            return "June";
+        }
+        else if(month.equals("Jul")) {
+            return "July";
+        }
+        else if(month.equals("Aug")) {
+            return "August";
+        }
+        else if(month.equals("Sept")) {
+            return "September";
+        }
+        else if(month.equals("Oct")) {
+            return "October";
+        }
+        else if(month.equals("Nov")) {
+            return "November";
+        }
+        else {
+            return "December";
+        }
+    }
+
     public static void createNotification(Context context, String message) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);

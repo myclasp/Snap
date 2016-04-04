@@ -3,25 +3,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".DailyActivity">
+    tools:context=".DailyActivity"
+    android:background="@drawable/background_image">
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/day_pie_chart"
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout1"
         android:layout_width="match_parent"
-        android:layout_height="280dp"
+        android:layout_height="50dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentStart="true">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/all_tv"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:textColor="#fff"
+                android:textSize="36sp"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:background="@color/clasp_colour" />
+
+            <Space android:layout_width="2dp" />
+
+            <TextView
+                android:id="@+id/ups_tv"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:textColor="#fff"
+                android:textSize="36sp"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:background="@color/up_primary" />
+
+            <Space android:layout_width="2dp" />
+
+            <TextView
+                android:id="@+id/downs_tv"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:textColor="#fff"
+                android:textSize="36sp"
+                android:gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:background="@color/down_primary" />
+        </TableRow>
+    </TableLayout>
+
+    <!--<com.github.mikephil.charting.charts.PieChart-->
+        <!--android:id="@+id/day_pie_chart"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="260dp"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentStart="true" />-->
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/listView"
-        android:layout_below="@+id/day_pie_chart"
+        android:layout_below="@+id/tableLayout1"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:divider="@null"
+        android:dividerHeight="10dp"
+        android:layout_marginBottom="5dp" />
 
 </RelativeLayout>

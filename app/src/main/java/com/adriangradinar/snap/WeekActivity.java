@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -96,17 +95,16 @@ public class WeekActivity extends AppCompatActivity {
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-
                 //create a bundle to add all data we can about this day
-//                Bundle bundle = new Bundle();
-//                bundle.putLong("timestamp", ((Click)ups.get(e.getXIndex())).getTimestamp());
-//                bundle.putString("day", ((Click)ups.get(e.getXIndex())).getDay());
-//                bundle.putString("month", Utils.convertIntToLongMonth(Integer.parseInt(((Click)ups.get(e.getXIndex())).getMonth())));
+                Bundle bundle = new Bundle();
+                bundle.putLong("timestamp", ((Click)ups.get(e.getXIndex())).getTimestamp());
+                bundle.putString("day", ((Click)ups.get(e.getXIndex())).getDay());
+                bundle.putString("month", Utils.convertIntToLongMonth(Integer.parseInt(((Click)ups.get(e.getXIndex())).getMonth())));
 //                bundle.putInt("ups", ((Click)ups.get(e.getXIndex())).getTotalClicks());
 //                bundle.putInt("downs", ((Click)downs.get(e.getXIndex())).getTotalClicks());
-//
-//                //move to the newt view... with the bundle genius!
-//                startActivity(new Intent(WeekActivity.this, DailyActivity.class).putExtra("values", bundle));
+
+                //move to the newt view... with the bundle genius!
+                startActivity(new Intent(WeekActivity.this, DailyActivity.class).putExtra("values", bundle));
 
 //                bundle.putLong("timestamp", ((Click)ups.get(e.getXIndex())).getTimestamp());
 //                bundle.putString("day", ((Click)ups.get(e.getXIndex())).getDay());

@@ -41,7 +41,7 @@ dependencies {
     compile 'com.auron:permission-manage:1.0.8'
 
     //import a nice job queue to handle all requests
-    compile 'com.github.yigit:android-priority-jobqueue:v2-SNAPSHOT'
+    compile 'com.birbit:android-priority-jobqueue:2.0.0-alpha2'
 
     //import the location play services
     compile 'com.google.android.gms:play-services:8.4.0'

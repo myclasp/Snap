@@ -19,6 +19,7 @@ public class Click {
 
     private String hour;
     private String minute;
+    private String second;
 
     public Click(int totalClicks, double latitude, double longitude, double accuracy, long timestamp) {
         this.totalClicks = totalClicks;
@@ -53,9 +54,39 @@ public class Click {
         this.type = type;
     }
 
+    public Click(String hour, int type, int totalClicks) {
+        this.hour = hour;
+        this.type = type;
+        this.totalClicks = totalClicks;
+    }
+
     public Click(int totalClicks, long timestamp) {
         this.totalClicks = totalClicks;
         this.timestamp = timestamp;
+    }
+
+    /**
+     * This is used for getting the values for one day
+     * @param id
+     * @param totalClicks
+     * @param longitude
+     * @param latitude
+     * @param accuracy
+     * @param timestamp
+     * @param hour
+     * @param minute
+     * @param second
+     */
+    public Click(int id, int totalClicks, double latitude, double longitude, double accuracy, long timestamp, String hour, String minute, String second) {
+        this.id = id;
+        this.totalClicks = totalClicks;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.accuracy = accuracy;
+        this.timestamp = timestamp;
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
     }
 
     public int getId() {
@@ -152,5 +183,13 @@ public class Click {
 
     public void setMinute(String minute) {
         this.minute = minute;
+    }
+
+    public String getSecond() {
+        return second;
+    }
+
+    public void setSecond(String second) {
+        this.second = second;
     }
 }

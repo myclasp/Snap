@@ -3,26 +3,16 @@ package com.adriangradinar.snap;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.adriangradinar.snap.classes.Click;
-import com.adriangradinar.snap.services.LocationService;
 import com.adriangradinar.snap.utils.DatabaseHandler;
 import com.adriangradinar.snap.utils.Utils;
-import com.path.android.jobqueue.AsyncAddCallback;
-import com.path.android.jobqueue.Job;
-import com.path.android.jobqueue.JobManager;
-import com.path.android.jobqueue.Params;
 
 import java.util.Random;
 
 import permission.auron.com.marshmallowpermissionhelper.ActivityManagePermission;
-import permission.auron.com.marshmallowpermissionhelper.PermissionResult;
-import permission.auron.com.marshmallowpermissionhelper.PermissionUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends ActivityManagePermission {
@@ -41,26 +31,37 @@ public class MainActivity extends ActivityManagePermission {
 
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(buttonListener);
+
+        findViewById(R.id.snapTV).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, DeepAnalysisActivity.class));
+            }
+        });
     }
 
     View.OnClickListener buttonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-//            startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-            if(db.countTotalClicks() == 0){
-                //need to generate some random data
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        generateClicks(2500);
-                        startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-                    }
-                }).start();
-            }
-            else{
-//                db.logClicks();
-                startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-            }
+            startActivity(new Intent(MainActivity.this, OverviewActivity.class));
+//            if(db.countTotalClicks() == 0){
+//                //need to generate some random data
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        generateClicks(2500);
+//                        startActivity(new Intent(MainActivity.this, OverviewActivity.class));
+//                    }
+//                }).start();
+//            }
+//            else{
+////                db.logClicks();
+////                startActivity(new Intent(MainActivity.this, OverviewActivity.class));
+//
+//            }
+
+
+//            db.getTotalEventsPerHour();
         }
     };
 

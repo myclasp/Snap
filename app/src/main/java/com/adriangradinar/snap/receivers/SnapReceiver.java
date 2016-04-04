@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.adriangradinar.snap.MainActivity;
 import com.adriangradinar.snap.services.LocationService;
 
 public class SnapReceiver extends BroadcastReceiver {

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,10 +28,15 @@ public class OverviewActivity extends AppCompatActivity {
 
         db = DatabaseHandler.getHelper(getApplicationContext());
 
-        setMostActiveDay();
-        setLeastActiveDay();
-        setHappiestDay();
-        setSaddestDay();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                setMostActiveDay();
+                setLeastActiveDay();
+                setHappiestDay();
+                setSaddestDay();
+            }
+        }).start();
     }
 
     private void setMostActiveDay(){
@@ -39,14 +45,24 @@ public class OverviewActivity extends AppCompatActivity {
         TextView tv_mad_day = (TextView) findViewById(R.id.tv_mad_day);
         TextView tv_mad_actions = (TextView) findViewById(R.id.tv_mad_actions);
 
-        findViewById(R.id.relativeLayout).setOnClickListener(new View.OnClickListener() {
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
+        assert relativeLayout != null;
+        relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                if (values[1] != null) {
+                    navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                } else {
+                    Toast.makeText(getApplicationContext(), "No data for this!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        tv_mad_month.setText(values[1] + " " + values[0]);
+        assert tv_mad_month != null;
+        assert tv_mad_day != null;
+        assert tv_mad_actions != null;
+        String t = values[1] + " " + values[0];
+        tv_mad_month.setText(t);
         tv_mad_day.setText(String.valueOf(values[2]));
         values[3] += " actions.";
         tv_mad_actions.setText(values[3]);
@@ -58,14 +74,24 @@ public class OverviewActivity extends AppCompatActivity {
         TextView tv_lad_day = (TextView) findViewById(R.id.tv_lad_day);
         TextView tv_lad_actions = (TextView) findViewById(R.id.tv_lad_actions);
 
-        findViewById(R.id.relativeLayout2).setOnClickListener(new View.OnClickListener() {
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout2);
+        assert relativeLayout != null;
+        relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                if (values[1] != null) {
+                    navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                } else {
+                    Toast.makeText(getApplicationContext(), "No data for this!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        tv_lad_month.setText(values[1] + " " + values[0]);
+        assert tv_lad_month != null;
+        assert tv_lad_day != null;
+        assert tv_lad_actions != null;
+        String t = values[1] + " " + values[0];
+        tv_lad_month.setText(t);
         tv_lad_day.setText(String.valueOf(values[2]));
         values[3] += " actions.";
         tv_lad_actions.setText(values[3]);
@@ -77,14 +103,24 @@ public class OverviewActivity extends AppCompatActivity {
         TextView tv_hd_day = (TextView) findViewById(R.id.tv_hd_day);
         TextView tv_hd_actions = (TextView) findViewById(R.id.tv_hd_actions);
 
-        findViewById(R.id.relativeLayout3).setOnClickListener(new View.OnClickListener() {
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout3);
+        assert relativeLayout != null;
+        relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                if (values[1] != null) {
+                    navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                } else {
+                    Toast.makeText(getApplicationContext(), "No data for this!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        tv_hd_month.setText(values[1] + " " + values[0]);
+        assert tv_hd_month != null;
+        assert tv_hd_day != null;
+        assert tv_hd_actions != null;
+        String t = values[1] + " " + values[0];
+        tv_hd_month.setText(t);
         tv_hd_day.setText(String.valueOf(values[2]));
         values[3] += " actions.";
         tv_hd_actions.setText(values[3]);
@@ -96,14 +132,24 @@ public class OverviewActivity extends AppCompatActivity {
         TextView tv_sd_day = (TextView) findViewById(R.id.tv_sd_day);
         TextView tv_sd_actions = (TextView) findViewById(R.id.tv_sd_actions);
 
-        findViewById(R.id.relativeLayout4).setOnClickListener(new View.OnClickListener() {
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout4);
+        assert relativeLayout != null;
+        relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                if (values[1] != null) {
+                    navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                } else {
+                    Toast.makeText(getApplicationContext(), "We have no data to display :(", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        tv_sd_month.setText(values[1] + " " + values[0]);
+        assert tv_sd_month != null;
+        assert tv_sd_day != null;
+        assert tv_sd_actions != null;
+        String t = values[1] + " " + values[0];
+        tv_sd_month.setText(t);
         tv_sd_day.setText(String.valueOf(values[2]));
         values[3] += " actions.";
         tv_sd_actions.setText(values[3]);

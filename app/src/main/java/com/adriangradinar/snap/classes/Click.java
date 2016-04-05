@@ -2,6 +2,7 @@ package com.adriangradinar.snap.classes;
 
 /**
  * Created by adriangradinar on 13/03/2016.
+ * The Click class - holds all details for a simple click
  */
 public class Click {
 
@@ -10,6 +11,7 @@ public class Click {
     private double latitude;
     private double longitude;
     private double accuracy;
+    private String address;
     private long timestamp;
 
     private String year;
@@ -21,11 +23,12 @@ public class Click {
     private String minute;
     private String second;
 
-    public Click(int totalClicks, double latitude, double longitude, double accuracy, long timestamp) {
+    public Click(int totalClicks, double latitude, double longitude, double accuracy, String address, long timestamp) {
         this.totalClicks = totalClicks;
         this.latitude = latitude;
         this.longitude = longitude;
         this.accuracy = accuracy;
+        this.address = address;
         this.timestamp = timestamp;
     }
 
@@ -47,12 +50,12 @@ public class Click {
         this.timestamp = timestamp;
     }
 
-    public Click(int id, String hour, String minute, int type) {
-        this.id = id;
-        this.hour = hour;
-        this.minute = minute;
-        this.type = type;
-    }
+//    public Click(int id, String hour, String minute, int type) {
+//        this.id = id;
+//        this.hour = hour;
+//        this.minute = minute;
+//        this.type = type;
+//    }
 
     public Click(String hour, int type, int totalClicks) {
         this.hour = hour;
@@ -67,26 +70,26 @@ public class Click {
 
     /**
      * This is used for getting the values for one day
-     * @param id
-     * @param totalClicks
-     * @param longitude
-     * @param latitude
-     * @param accuracy
-     * @param timestamp
-     * @param hour
-     * @param minute
-     * @param second
      */
-    public Click(int id, int totalClicks, double latitude, double longitude, double accuracy, long timestamp, String hour, String minute, String second) {
+    public Click(int id, int totalClicks, double latitude, double longitude, double accuracy, String address, long timestamp, String hour, String minute, String second) {
         this.id = id;
         this.totalClicks = totalClicks;
         this.longitude = longitude;
         this.latitude = latitude;
         this.accuracy = accuracy;
+        this.address = address;
         this.timestamp = timestamp;
         this.hour = hour;
         this.minute = minute;
         this.second = second;
+    }
+
+    // this click is for updating the address of the click
+    public Click(int id, double latitude, double longitude, String address) {
+        this.id = id;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
     }
 
     public int getId() {
@@ -127,6 +130,14 @@ public class Click {
 
     public void setAccuracy(double accuracy) {
         this.accuracy = accuracy;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public long getTimestamp() {

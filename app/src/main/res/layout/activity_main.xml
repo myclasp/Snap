@@ -1,39 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/final_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingPrefix"
-    android:id="@+id/final_layout"
-    android:background="@drawable/background_image">
+    android:background="@drawable/background_image"
+    tools:ignore="MissingPrefix">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="140dp"
         android:layout_height="140dp"
-        android:id="@+id/imageView"
-        android:src="@drawable/clasplogohoriz"
-        android:layout_marginBottom="45dp"
         android:layout_above="@+id/snapTV"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="45dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/clasplogohoriz" />
 
     <TextView
+        android:id="@+id/snapTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Snapino"
-        android:id="@+id/snapTV"
-        android:textSize="52sp"
-        android:textColor="@color/clasp_colour"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="Snapino"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/clasp_colour"
+        android:textSize="52sp" />
 
     <Button
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start!"
-        android:id="@+id/button"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="31dp" />
+        android:layout_marginBottom="31dp"
+        android:text="Start!" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/snapTV"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:visibility="invisible" />
 
 </RelativeLayout>

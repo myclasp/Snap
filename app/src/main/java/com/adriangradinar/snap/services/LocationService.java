@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,28 +28,28 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.Locale;
+
 public class LocationService extends Service implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, LocationListener {
 
     public final static String CLICK = "click";
     public final static int UP_CLICK = 1;
     public final static int DOWN_CLICK = 2;
-
+    //    private static boolean isGpsListenerSet = false;
+    public final static String TAG = LocationService.class.getSimpleName();
     private final static int FASTEST_TIME_INTERVAL = 500;
     private final static int UPDATE_TIME_INTERVAL = 4000;
     private final static int SLEEP_TIME_INTERVAL = 2000;
     private final static double DESIRED_ACCURACY = 30; //in meters
     private final static int NUMBER_OF_TRIES = 15;
-
-    //    private static boolean isGpsListenerSet = false;
-    public final static String TAG = LocationService.class.getSimpleName();
-    private String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Clasp/Snap";
-
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation = null;
+    private String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Clasp/Snap";
     private LocationRequest locationRequest;
     private DatabaseHandler db;
 
     private JobManager jobManager;
+    private Geocoder geocoder;
 
     public LocationService() {}
 
@@ -88,10 +89,12 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
 //            }
 //        }
 
+        geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
         buildGoogleApiClient();
-        if (!Utils.checkIfGpsIsOn(this)) {
-            Utils.createNotification(LocationService.this.getApplicationContext(), "Location is deactivated!");
-        }
+//        if (!Utils.checkIfGpsIsOn(this)) {
+//            Utils.createNotification(LocationService.this.getApplicationContext(), "Location is deactivated!");
+//        }
 
         locationRequest = new LocationRequest();
         db = DatabaseHandler.getHelper(LocationService.this.getApplicationContext());
@@ -147,10 +150,11 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
 
         //when we get access to the jobManager, we close the location listener
         if(jobManager != null){
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if(jobManager.getActiveConsumerCount() == 0){
+                    if (jobManager.countReadyJobs() == 0) {
                         Log.e(TAG, "done!");
                         stopLocationService();
                     }
@@ -175,7 +179,7 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
                             private static final String TAG = "Jobs_on_presses!";
                             @Override
                             public boolean isDebugEnabled() {
-                                return true;
+                                return false;
                             }
 
                             @Override
@@ -194,13 +198,16 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
                             }
                         })
                         .minConsumerCount(1)//always keep at least one consumer alive
-                        .maxConsumerCount(3)//up to 3 consumers at a time
-                        .loadFactor(3)//3 jobs per consumer
-                        .consumerKeepAlive(120);//wait 2 minute
+                        .maxConsumerCount(1)//up to 3 consumers at a time
+                        .loadFactor(1);//1 jobs per consumer
+//                        .consumerKeepAlive(40);//wait 40 seconds
                 //add the configuration to the jobManager
                 jobManager = new JobManager(builder.build());
             }
-            jobManager.addJobInBackground(new HandleRequests(new Click(intent.getExtras().getInt(LocationService.CLICK), Utils.getTimestamp())));
+
+            Job job = new HandleRequests(new Click(intent.getExtras().getInt(LocationService.CLICK), Utils.getTimestamp()));
+//            Log.e(TAG, ""+job.getId());
+            jobManager.addJobInBackground(job);
         }
 
         return START_NOT_STICKY;
@@ -260,13 +267,19 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
             if(mLastLocation != null){
                 Log.e(TAG, "save current location to db!");
 //                Log.e(TAG, "acc: " + mLastLocation.getAccuracy());
-                db.addClick(new Click(click.getTotalClicks(), mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), click.getTimestamp()));
+                if (Utils.isWifiON(getApplicationContext()))
+                    db.addClick(new Click(click.getTotalClicks(), mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), Utils.returnAddress(geocoder, mLastLocation.getLatitude(), mLastLocation.getLongitude()), click.getTimestamp()));
+                else
+                    db.addClick(new Click(click.getTotalClicks(), mLastLocation.getLatitude(), mLastLocation.getLongitude(), mLastLocation.getAccuracy(), ("not yet converted"), click.getTimestamp()));
             }
             else{
                 Log.e(TAG, "save dummy location to db!");
-                db.addClick(new Click(click.getTotalClicks(), 0d, 0d, 0d, click.getTimestamp()));
+                db.addClick(new Click(click.getTotalClicks(), 0d, 0d, 0d, ("not yet converted"), click.getTimestamp()));
 //                Log.e(TAG, "acc: " + mLastLocation.getAccuracy());
             }
+
+            //let's stop the location service
+//            stopLocationService();
         }
 
         @Override

@@ -9,7 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.adriangradinar.snap.classes.Click;
+import com.adriangradinar.snap.classes.ClickAddress;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -31,6 +37,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String LAT = "click_latitude";
     private static final String LON = "click_longitude";
     private static final String ACC = "click_accuracy";
+    private static final String ADDRESS = "click_address";
     private static final String TIMESTAMP = "click_timestamp";
 
     private static DatabaseHandler instance;
@@ -51,7 +58,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_LOCATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_CLICKS + "("
                 + ID + " INTEGER PRIMARY KEY, " + NUMBER + " INTEGER, "
                 + LAT + " TEXT, " + LON + " TEXT, " + ACC + " REAL, "
-                + TIMESTAMP + " TEXT" + ")";
+                + ADDRESS + " TEXT, " + TIMESTAMP + " TEXT" + ")";
         db.setLocale(Locale.UK);
         db.execSQL(CREATE_LOCATIONS_TABLE);
         db.execSQL("CREATE INDEX DATE ON " + TBL_CLICKS + " ("+TIMESTAMP+")");
@@ -77,10 +84,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put(LAT, click.getLatitude());
             values.put(LON, click.getLongitude());
             values.put(ACC, click.getAccuracy());
+            values.put(ADDRESS, click.getAddress());
             values.put(TIMESTAMP, click.getTimestamp());
 
             db.insert(TBL_CLICKS, null, values);
-            db.close();
 //            Log.w(TAG, "CLick inserted into the database!");
         } catch (SQLiteDatabaseLockedException e) {
             e.printStackTrace();
@@ -103,8 +110,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
-                db.close();
+                if (cursor != null)
+                    cursor.close();
+            }
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
+        }
+
+        return total;
+    }
+
+    public int countTotalLocationsWithoutAnAddress() {
+        int total = 0;
+        try {
+            String sql = "SELECT COUNT(*) FROM " + TBL_CLICKS + " WHERE " + ADDRESS + " = 'not yet converted'";
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(sql, null);
+
+            //save every event to the events list array
+            try {
+                if (cursor.moveToFirst()) {
+                    do {
+                        total = cursor.getInt(0);
+                    }
+                    while (cursor.moveToNext());
+                }
+            } finally {
+                if (cursor != null)
+                    cursor.close();
             }
         } catch (SQLiteDatabaseLockedException e) {
             e.printStackTrace();
@@ -133,7 +166,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -162,7 +196,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -191,7 +226,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -220,7 +256,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -253,7 +290,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }
                 ups.addAll(downs);
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -266,9 +304,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Function which searches and fetches all the results for the current months
      * @return An ArrayList of ups and downs
      */
-    public ArrayList<Click> getCurrentMonth(){ //this does not include the current day's data
-        ArrayList<Click> ups = new ArrayList<>();
-        ArrayList<Click> downs = new ArrayList<>();
+    public ArrayList<Click> getCurrentMonth_old() { //this does not include the current day's data
+        ArrayList<Click> clicks = new ArrayList<>();
 
         try{
             String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action, t.clicks, t.timestamp FROM (SELECT "+TIMESTAMP+" as timestamp, "+NUMBER+" AS action, COUNT("+NUMBER+") AS clicks FROM "+TBL_CLICKS+" WHERE date("+TIMESTAMP+", 'unixepoch', 'localtime') BETWEEN date('now', 'start of month', 'localtime') AND date('now', 'start of day', 'localtime') GROUP BY "+NUMBER+", date("+TIMESTAMP+", 'unixepoch', 'localtime') ORDER BY "+TIMESTAMP+" ASC) AS t";
@@ -278,27 +315,46 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        if(cursor.getInt(3) == 1){
-                            ups.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-                        }
-                        else{
-                            downs.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-                        }
-//                        Log.e("db", cursor.getString(0)+" "+cursor.getString(1)+" "+cursor.getString(2)+" "+cursor.getInt(3)+" "+cursor.getInt(4)+" "+cursor.getInt(5));
+//                        clicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
+                        Log.e("db", cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getInt(3) + " " + cursor.getInt(4) + " " + cursor.getInt(5));
                     }
                     while (cursor.moveToNext());
                 }
-                ups.addAll(downs);
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
             e.printStackTrace();
         }
 
-        Log.e(TAG, "Total: " + ups.size());
-        return ups;
+        return clicks;
+    }
+
+    public ArrayList<Click> getCurrentMonth() { //this does not include the current day's data
+        ArrayList<Click> clicks = new ArrayList<>();
+        try {
+            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action AS actions, t.clicks AS clicks, t.timestamp AS timestamp FROM (SELECT " + TIMESTAMP + " as timestamp, " + NUMBER + " AS action, COUNT(" + NUMBER + ") AS clicks FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') BETWEEN date('now', 'start of month', 'localtime') AND date('now', 'start of day', '+1 day', 'localtime') GROUP BY " + NUMBER + ", date(" + TIMESTAMP + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + " ASC) AS t ORDER BY day, actions";
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(sql, null);
+
+            try {
+                if (cursor.moveToFirst()) {
+                    do {
+                        clicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
+//                        Log.e("db", cursor.getString(0)+" "+cursor.getString(1)+" "+cursor.getString(2)+" "+cursor.getInt(3)+" "+cursor.getInt(4)+" "+cursor.getInt(5));
+                    }
+                    while (cursor.moveToNext());
+                }
+            } finally {
+                if (cursor != null)
+                    cursor.close();
+            }
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
+        }
+        return clicks;
     }
 
     public ArrayList<Click> getDayBasedOnTimestamp(long timestamp){
@@ -308,7 +364,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ArrayList<Click> values = new ArrayList<>();
 
         try{
-            String sql = "SELECT t.id, t.action, t.lat, t.lon, t.acc, t.timestamp, strftime('%H', datetime(t.timestamp, 'unixepoch', 'localtime')) AS hour, strftime('%M', datetime(t.timestamp, 'unixepoch', 'localtime')) AS minute, strftime('%S', datetime(t.timestamp, 'unixepoch', 'localtime')) AS second FROM (SELECT "+ID+" AS id, "+NUMBER+" AS action, "+LAT+" AS lat, "+LON+" AS lon, "+ACC+" AS acc, "+TIMESTAMP+" as timestamp FROM "+TBL_CLICKS+" WHERE date("+TIMESTAMP+", 'unixepoch', 'localtime') == date("+timestamp+", 'unixepoch', 'localtime') ORDER BY "+TIMESTAMP+") as t";
+            String sql = "SELECT t.id, t.action, t.lat, t.lon, t.acc, t.address, t.timestamp, strftime('%H', datetime(t.timestamp, 'unixepoch', 'localtime')) AS hour, strftime('%M', datetime(t.timestamp, 'unixepoch', 'localtime')) AS minute, strftime('%S', datetime(t.timestamp, 'unixepoch', 'localtime')) AS second FROM (SELECT " + ID + " AS id, " + NUMBER + " AS action, " + LAT + " AS lat, " + LON + " AS lon, " + ACC + " AS acc, " + ADDRESS + " AS address, " + TIMESTAMP + " as timestamp FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') == date(" + timestamp + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + ") as t";
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
 
@@ -322,7 +378,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                            downs.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
 //                        }
 //                        Log.e("db", cursor.getString(0)+" "+cursor.getString(1)+" "+cursor.getString(2)+" "+cursor.getInt(3)+" "+cursor.getInt(4)+" "+cursor.getInt(5));
-                        values.add(new Click(cursor.getInt(0), cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getDouble(4), cursor.getLong(5), cursor.getString(6), cursor.getString(7), cursor.getString(8)));
+                        values.add(new Click(cursor.getInt(0), cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getDouble(4), cursor.getString(5), cursor.getLong(6), cursor.getString(7), cursor.getString(8), cursor.getString(9)));
                         //int id, int totalClicks, double latitude, double longitude, double accuracy, long timestamp, String hour, String minute, String second
 //                        Log.e("db", cursor.getInt(0) + " " + cursor.getString(1)+":"+cursor.getString(2)+" "+cursor.getInt(3) + " " + cursor.getString(4));
                     }
@@ -330,7 +386,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }
 //                ups.addAll(downs);
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -341,8 +398,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
      * Simple method to count the events in one day - might be useful to something else later on :)
-     * @param timestamp
-     * @return total!
      */
     public int countEventsInDayBasedOnTimestamp(long timestamp){
         int total = 0;
@@ -358,7 +413,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -401,7 +457,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
@@ -413,6 +470,46 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return list;
     }
+
+    public ArrayList<Click> getClicksWithoutAddress(int limit) {
+        ArrayList<Click> clicks = new ArrayList<>();
+        try {
+            String sql = "SELECT " + ID + " AS id, " + LAT + " AS lat, " + LON + " AS lon, " + ADDRESS + " AS address FROM " + TBL_CLICKS + " WHERE " + ADDRESS + " = 'not yet converted' LIMIT " + limit;
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(sql, null);
+
+            //save every event to the events list array
+            try {
+                if (cursor.moveToFirst()) {
+                    do {
+                        clicks.add(new Click(cursor.getInt(0), cursor.getDouble(1), cursor.getDouble(2), cursor.getString(3)));
+                    }
+                    while (cursor.moveToNext());
+                }
+            } finally {
+                if (cursor != null)
+                    cursor.close();
+            }
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
+        }
+        return clicks;
+    }
+
+    public void updateAddresses(ArrayList<ClickAddress> addresses) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            int total = addresses.size();
+            for (int i = 0; i < total; i++) {
+                ContentValues values = new ContentValues();
+                values.put(ADDRESS, addresses.get(i).getAddress());
+                db.update(TBL_CLICKS, values, ID + "='" + addresses.get(i).getId() + "'", null);
+            }
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * This is a helper function to list all the clicks in the database
@@ -434,12 +531,69 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     while (cursor.moveToNext());
                 }
             } finally {
-                cursor.close();
+                if (cursor != null)
+                    cursor.close();
             }
         }
         catch (SQLiteDatabaseLockedException e){
             e.printStackTrace();
         }
+    }
+
+    public void downloadCSV(String fullPath) {
+        try {
+            File dir = new File(fullPath);
+
+            boolean isDirectoryCreated = dir.exists();
+            if (!isDirectoryCreated) {
+                isDirectoryCreated = dir.mkdir();
+            }
+
+            if (isDirectoryCreated) {
+                File myFile = new File(fullPath, "database_" + Utils.getTimestamp() + ".txt");
+
+                boolean isFileCreated = myFile.exists();
+                if (!isFileCreated) {
+                    isFileCreated = myFile.createNewFile();
+                }
+
+                if (isFileCreated) {
+                    PrintWriter printWriter = new PrintWriter(new FileWriter(myFile));
+                    printWriter.println(TBL_CLICKS + "@" + Utils.getTimestamp());
+                    printWriter.println(ID + "," + NUMBER + "," + LAT + "," + LON + "," + ACC + "," + ADDRESS + "," + TIMESTAMP);
+
+                    try {
+                        String sql = "SELECT * FROM " + TBL_CLICKS + " ORDER BY " + ID;
+                        SQLiteDatabase db = this.getWritableDatabase();
+                        Cursor cursor = db.rawQuery(sql, null);
+
+                        try {
+                            if (cursor.moveToFirst()) {
+                                do {
+                                    printWriter.println(cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getDouble(2) + "," + cursor.getDouble(3) + "," + cursor.getDouble(4) + "," + cursor.getString(5).replaceAll("\\n", " ") + "," + cursor.getLong(6));
+                                }
+                                while (cursor.moveToNext());
+                            }
+                        } finally {
+                            if (cursor != null)
+                                cursor.close();
+                        }
+                    } catch (SQLiteDatabaseLockedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        printWriter.close();
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "Couldn't find the file");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "An I/O Error occurred");
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "Database download completed!");
     }
 
     @Override

@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.adriangradinar.snap.adapters.ClickAdapter;
 import com.adriangradinar.snap.classes.Click;
 import com.adriangradinar.snap.utils.DatabaseHandler;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 
@@ -29,7 +31,12 @@ public class DailyActivity extends AppCompatActivity {
 
     private int upsCount = 0;
     private int downsCount = 0;
-    private int totalCount = 0 ;
+    private int totalCount = 0;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,16 +52,16 @@ public class DailyActivity extends AppCompatActivity {
 
         //get the clicks
         all = db.getDayBasedOnTimestamp(b.getLong("timestamp"));
+
         ups = new ArrayList<>();
         downs = new ArrayList<>();
 
         //let's parse the clicks
-        for(Click click : all){
-            if(click.getTotalClicks() == 1){
+        for (Click click : all) {
+            if (click.getTotalClicks() == 1) {
                 ups.add(click);
                 upsCount++;
-            }
-            else{
+            } else {
                 downs.add(click);
                 downsCount++;
             }
@@ -62,6 +69,7 @@ public class DailyActivity extends AppCompatActivity {
         totalCount = upsCount + downsCount;
 
         clickAdapter = new ClickAdapter(activity, all);
+        assert listview != null;
         listview.setAdapter(clickAdapter);
 
         //set the title to the selected day
@@ -69,6 +77,7 @@ public class DailyActivity extends AppCompatActivity {
 
         //set the values and the listeners
         TextView upsTV = ((TextView) findViewById(R.id.ups_tv));
+        assert upsTV != null;
         upsTV.setText(String.valueOf(upsCount));
         upsTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +89,7 @@ public class DailyActivity extends AppCompatActivity {
         });
 
         final TextView downsTV = ((TextView) findViewById(R.id.downs_tv));
+        assert downsTV != null;
         downsTV.setText(String.valueOf(downsCount));
         downsTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +101,7 @@ public class DailyActivity extends AppCompatActivity {
         });
 
         TextView totalTV = ((TextView) findViewById(R.id.all_tv));
+        assert totalTV != null;
         totalTV.setText(String.valueOf(totalCount));
         totalTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +115,9 @@ public class DailyActivity extends AppCompatActivity {
         //set the pie chart data
 //        setWeekView(b.getInt("ups"), b.getInt("downs"));
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 //    private void setWeekView(int ups, int downs){
@@ -167,19 +181,44 @@ public class DailyActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
-}
 
-//class MyValueFormatter implements ValueFormatter {
-//
-//    private DecimalFormat mFormat;
-//
-//    public MyValueFormatter() {
-//        mFormat = new DecimalFormat("###,###,##0"); // use no decimal
-//    }
-//
-//    @Override
-//    public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-//        // write your logic here
-//        return mFormat.format(value); // e.g. append a dollar-sign
-//    }
-//}
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+//        Action viewAction = Action.newAction(
+//                Action.TYPE_VIEW, // TODO: choose an action type.
+//                "Daily Page", // TODO: Define a title for the content shown.
+//                // TODO: If you have web page content that matches this app activity's content,
+//                // make sure this auto-generated web page URL is correct.
+//                // Otherwise, set the URL to null.
+//                Uri.parse("http://host/path"),
+//                // TODO: Make sure this auto-generated app URL is correct.
+//                Uri.parse("android-app://com.adriangradinar.snap/http/host/path")
+//        );
+//        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+//        Action viewAction = Action.newAction(
+//                Action.TYPE_VIEW, // TODO: choose an action type.
+//                "Daily Page", // TODO: Define a title for the content shown.
+//                // TODO: If you have web page content that matches this app activity's content,
+//                // make sure this auto-generated web page URL is correct.
+//                // Otherwise, set the URL to null.
+//                Uri.parse("http://host/path"),
+//                // TODO: Make sure this auto-generated app URL is correct.
+//                Uri.parse("android-app://com.adriangradinar.snap/http/host/path")
+//        );
+//        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
+}

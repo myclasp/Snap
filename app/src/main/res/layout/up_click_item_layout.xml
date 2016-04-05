@@ -1,58 +1,48 @@
-<RelativeLayout android:layout_width="wrap_content"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
-                android:descendantFocusability="blocksDescendants"
-                xmlns:android="http://schemas.android.com/apk/res/android">
+    android:descendantFocusability="blocksDescendants">
 
     <RelativeLayout
             android:id="@+id/date_container"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:background="@android:color/white"
-        android:paddingTop="5dp"
         android:paddingBottom="5dp"
-        android:paddingLeft="5dp">
+        android:paddingStart="5dp"
+        android:paddingTop="5dp">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="time"
             android:id="@+id/hour_min_sec_tv"
-            android:textColor="@android:color/white"
-            android:textSize="50sp"
-            android:gravity="center_vertical"
             fontPath="fonts/digital-7-mono.ttf"
-            android:background="@color/up_primary"
-            android:padding="5dp" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/up_primary"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="time"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Location"
+            android:textColor="@android:color/white"
+            android:textSize="50sp" />
+
+        <TextView
             android:id="@+id/location_tv"
-            android:textColor="@color/Black"
-            android:layout_marginLeft="10dp"
+            fontPath="fonts/Lato-Light.ttf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/hour_min_sec_tv"
+            android:layout_marginBottom="-2dp"
+            android:layout_marginStart="10dp"
             android:layout_toEndOf="@+id/hour_min_sec_tv"
-            android:layout_marginBottom="5dp" />
+            android:text="Location"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/Black"
+            android:textSize="14sp" />
     </RelativeLayout>
-
-    <!--
-
-        <LinearLayout
-                    android:id="@+id/separator"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/barter_green"
-                    android:orientation="horizontal"
-                    android:layout_below="@+id/transactionDate"/>
-
-    -->
 
 </RelativeLayout>

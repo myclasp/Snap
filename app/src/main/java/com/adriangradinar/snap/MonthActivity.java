@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -41,7 +42,7 @@ public class MonthActivity extends AppCompatActivity {
     private List<CalendarDay> upDecorators = new ArrayList<>();
     private List<CalendarDay> downDecorators = new ArrayList<>();
     private List<CalendarDay> equalDecorators = new ArrayList<>();
-    private Click up, down;
+//    private Click up, down;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,24 +63,40 @@ public class MonthActivity extends AppCompatActivity {
                 db = DatabaseHandler.getHelper(getApplicationContext());
                 monthClicks = db.getCurrentMonth();
 
-                List ups = monthClicks.subList(0, monthClicks.size()/2);
-                List downs = monthClicks.subList(monthClicks.size()/2, monthClicks.size());
+                for (int i = 0; i < monthClicks.size() - 1; i++) {
+                    Click now = monthClicks.get(i);
+                    Click next = monthClicks.get(i + 1);
 
-                for(int i = 0; i < ups.size(); i++){
-                    up = (Click) ups.get(i);
-                    down = (Click) downs.get(i);
+//                    Log.e(TAG, now.getType() + " - " + next.getType());
 
-                    if(up.getTotalClicks() > down.getTotalClicks()){
-                        upDecorators.add(CalendarDay.from(new Date(up.getTimestamp()*1000)));
-                    }
-                    else if(up.getTotalClicks() < down.getTotalClicks()){
-                        downDecorators.add(CalendarDay.from(new Date(down.getTimestamp()*1000)));
+                    if (now.getType() == 1) {
+                        //we have ups
+                        if (now.getDay().equals(next.getDay())) {
+                            i++;
+//                            Log.e(TAG, "we should be here");
+                            //we have both type of events in the same day
+                            if (now.getTotalClicks() > next.getTotalClicks()) {
+                                //ups win
+                                upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                            } else if (now.getTotalClicks() == next.getTotalClicks()) {
+                                //same value
+                                equalDecorators.add(CalendarDay.from(new Date(next.getTimestamp() * 1000)));
+                            } else if (now.getTotalClicks() < next.getTotalClicks()) {
+                                //downs win
+                                downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                            } else {
+                                Log.e(TAG, "logic error");
+                            }
+                        } else {
+                            //we only have ups
+                            upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                        }
                     }
                     else{
-                        equalDecorators.add(CalendarDay.from(new Date(up.getTimestamp()*1000)));
+                        //we only have downs
+                        downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
                     }
                 }
-
             }
         }, new Runnable() {
             @Override
@@ -117,6 +134,31 @@ public class MonthActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_month, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.week_view:
+                startActivity(new Intent(MonthActivity.this, WeekActivity.class));
+                finish();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
     public class EventDecorator implements DayViewDecorator {
         private final int drawable;
         private final HashSet<CalendarDay> dates;
@@ -134,33 +176,8 @@ public class MonthActivity extends AppCompatActivity {
         @Override
         public void decorate(DayViewFacade view) {
             view.addSpan(new ForegroundColorSpan(Color.WHITE));
-            if(ContextCompat.getDrawable(getApplicationContext(), drawable) != null)
+            if (ContextCompat.getDrawable(getApplicationContext(), drawable) != null)
                 view.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), drawable));
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_month, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id){
-            case R.id.week_view:
-                startActivity(new Intent(MonthActivity.this, WeekActivity.class));
-                finish();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

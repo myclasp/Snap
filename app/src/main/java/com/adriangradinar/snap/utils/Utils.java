@@ -5,15 +5,22 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.adriangradinar.snap.MainActivity;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 /**
  * Created by adriangradinar on 12/03/2016.
+ * This class holds a bunch of static methods to be accessed from wherever within the app
  */
 public class Utils {
 
@@ -27,6 +34,25 @@ public class Utils {
 
     public static void checkRunningThread(String TAG) {
         Log.e(TAG, "Running in thread: " + Thread.currentThread().toString());
+    }
+
+    public static boolean isWifiON(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting() && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI && Utils.isOnline();
+    }
+
+    public static boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     public static String convertIntToMonth(int month){
@@ -90,41 +116,33 @@ public class Utils {
     }
 
     public static String convertStringToLongMonth(String month){
-        if(month.equals("Jan")) {
-            return "January";
-        }
-        else if(month.equals("Feb")) {
-            return "February";
-        }
-        else if(month.equals("Mar")) {
-            return "March";
-        }
-        else if(month.equals("Apr")) {
-            return "April";
-        }
-        else if(month.equals("May")) {
-            return "May";
-        }
-        else if(month.equals("Jun")) {
-            return "June";
-        }
-        else if(month.equals("Jul")) {
-            return "July";
-        }
-        else if(month.equals("Aug")) {
-            return "August";
-        }
-        else if(month.equals("Sept")) {
-            return "September";
-        }
-        else if(month.equals("Oct")) {
-            return "October";
-        }
-        else if(month.equals("Nov")) {
-            return "November";
-        }
-        else {
-            return "December";
+        switch (month) {
+            case "Jan":
+                return "January";
+            case "Feb":
+                return "February";
+            case "Mar":
+                return "March";
+            case "Apr":
+                return "April";
+            case "May":
+                return "May";
+            case "Jun":
+                return "June";
+            case "Jul":
+                return "July";
+            case "Aug":
+                return "August";
+            case "Sept":
+                return "September";
+            case "Oct":
+                return "October";
+            case "Nov":
+                return "November";
+            case "Dec":
+                return "December";
+            default:
+                return "conversion error!";
         }
     }
 
@@ -151,9 +169,26 @@ public class Utils {
     }
 
     public static boolean checkIfGpsIsOn(Context context) {
-        if (!((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            return false;
+        return ((LocationManager) context.getSystemService(Context.LOCATION_SERVICE)).isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    public static String returnAddress(Geocoder geocoder, double latitude, double longitude) {
+        String address = String.valueOf(latitude) + " / " + String.valueOf(longitude);
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses.size() > 0) {
+                address = "";
+                for (int i = 0; i < addresses.get(0).getMaxAddressLineIndex(); i++) {
+                    if (i != addresses.get(0).getMaxAddressLineIndex() - 1)
+                        address += addresses.get(0).getAddressLine(i) + "\n";
+                    else
+                        address += addresses.get(0).getAddressLine(i);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return true;
+
+        return address;
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,7 +23,6 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -65,41 +65,141 @@ public class WeekActivity extends AppCompatActivity {
         rightAxis.setDrawLabels(false);
 
         ArrayList<Integer> colors = new ArrayList<>();
-
-        ArrayList<Click> all = db.selectLast7Days();
-        final List ups = all.subList(0, all.size()/2);
-        final List downs = all.subList(all.size()/2, all.size());
         ArrayList<BarEntry> yVals = new ArrayList<>();
         ArrayList<String> xVals = new ArrayList<>();
-        for(int i = 0; i < ups.size(); i++){
-            Click upCLick = (Click) ups.get(i);
-            Click downClick = (Click) downs.get(i);
+        final ArrayList<Click> chartClicks = new ArrayList<>();
 
-            if(upCLick.getTotalClicks() > downClick.getTotalClicks()){
-                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_secondary));
-                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
-            }
-            else if(upCLick.getTotalClicks() < downClick.getTotalClicks()){
-                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
-                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_secondary));
+        ArrayList<Click> weekClicks = db.selectLast7Days();
+        int totalDays = 0;
+        for (int i = 0; i < weekClicks.size(); i++) {
+
+//            Log.e(TAG, "i = " + i + " - " + "type = " + weekClicks.get(i).getType());
+
+//            Log.e(TAG, ""+i);
+            if (i != weekClicks.size() - 1) {
+                Click now = weekClicks.get(i);
+                Click next = weekClicks.get(i + 1);
+//                Log.d(TAG, "day: " + weekClicks.get(i).getType());
+                if (now.getType() == 1) {
+                    //we have ups
+                    if (now.getDay().equals(next.getDay())) {
+//                        Log.d(TAG, "ups and downs on the same day");
+                        //we have both type of events in the same day
+                        if (now.getTotalClicks() > next.getTotalClicks()) {
+//                            Log.e(TAG, "up");
+                            //ups win
+                            colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_secondary));
+                            colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
+                        } else if (now.getTotalClicks() == next.getTotalClicks()) {
+//                            Log.e(TAG, "equal");
+                            //same value
+                            colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
+                            colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
+                        } else if (now.getTotalClicks() < next.getTotalClicks()) {
+//                            Log.e(TAG, "down");
+                            //downs win
+                            colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
+                            colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_secondary));
+                        } else {
+                            Log.e(TAG, "logic error");
+                        }
+
+//                        Log.d(TAG, "values " + now.getTotalClicks() + " - " + next.getTotalClicks());
+
+                        //add the data & labels to the chart
+                        yVals.add(new BarEntry(new float[]{((-1) * next.getTotalClicks()), now.getTotalClicks()}, totalDays));
+                        xVals.add(now.getDay() + " " + Utils.convertIntToMonth(Integer.parseInt(now.getMonth())));
+
+                        i++;
+                    } else {
+
+//                        Log.d(TAG, "only ups day");
+//                        Log.e(TAG, now.getDay());
+
+                        //we only have ups
+                        colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
+
+                        //add the data & labels to the chart
+                        yVals.add(new BarEntry(new float[]{now.getTotalClicks()}, totalDays));
+                        xVals.add(now.getDay() + " " + Utils.convertIntToMonth(Integer.parseInt(now.getMonth())));
+                    }
+                } else {
+
+//                    Log.e(TAG, "down selection");
+                    //we only have downs
+                    colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
+
+                    //add the data & labels to the chart
+                    yVals.add(new BarEntry(new float[]{((-1) * next.getTotalClicks())}, totalDays));
+                    xVals.add(now.getDay() + " " + Utils.convertIntToMonth(Integer.parseInt(now.getMonth())));
+                }
+                chartClicks.add(now);
             }
             else{
-                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
-                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
-            }
 
-            yVals.add(new BarEntry(new float[]{((-1) * downClick.getTotalClicks()), upCLick.getTotalClicks()}, i));
-            xVals.add(upCLick.getDay() + " "+ Utils.convertIntToMonth(Integer.parseInt(((Click)ups.get(i)).getMonth())));
+//                Log.d(TAG, "last day");
+
+                Click now = weekClicks.get(i);
+//                Log.e(TAG, now.getType() + " " + now.getTotalClicks());
+                if (now.getType() == 1) {
+                    //we only have ups
+                    colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
+
+                    //add the data & labels to the chart
+                    yVals.add(new BarEntry(new float[]{now.getTotalClicks()}, totalDays));
+                    xVals.add(now.getDay() + " " + Utils.convertIntToMonth(Integer.parseInt(now.getMonth())));
+                } else {
+                    //we only have downs
+                    colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
+
+                    //add the data & labels to the chart
+                    yVals.add(new BarEntry(new float[]{((-1) * now.getTotalClicks())}, totalDays));
+                    xVals.add(now.getDay() + " " + Utils.convertIntToMonth(Integer.parseInt(now.getMonth())));
+                }
+                chartClicks.add(now);
+            }
+            //increase number of days
+            totalDays++;
+
+
+            //labels
+//            yVals.add(new BarEntry(new float[]{((-1) * now.getTotalClicks()), now.getTotalClicks()}, i));
+//            xVals.add(now.getDay() + " "+ Utils.convertIntToMonth(Integer.parseInt(now.getMonth())));
         }
+
+//        final List ups = all.subList(0, all.size()/2);
+//        final List downs = all.subList(all.size()/2, all.size());
+//        ArrayList<BarEntry> yVals = new ArrayList<>();
+//        ArrayList<String> xVals = new ArrayList<>();
+//        for(int i = 0; i < ups.size(); i++){
+//            Click upCLick = (Click) ups.get(i);
+//            Click downClick = (Click) downs.get(i);
+//
+//            if(upCLick.getTotalClicks() > downClick.getTotalClicks()){
+//                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_secondary));
+//                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
+//            }
+//            else if(upCLick.getTotalClicks() < downClick.getTotalClicks()){
+//                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
+//                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_secondary));
+//            }
+//            else{
+//                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
+//                colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
+//            }
+//
+//            yVals.add(new BarEntry(new float[]{((-1) * downClick.getTotalClicks()), upCLick.getTotalClicks()}, i));
+//            xVals.add(upCLick.getDay() + " "+ Utils.convertIntToMonth(Integer.parseInt(((Click)ups.get(i)).getMonth())));
+//        }
 
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
                 //create a bundle to add all data we can about this day
                 Bundle bundle = new Bundle();
-                bundle.putLong("timestamp", ((Click)ups.get(e.getXIndex())).getTimestamp());
-                bundle.putString("day", ((Click)ups.get(e.getXIndex())).getDay());
-                bundle.putString("month", Utils.convertIntToLongMonth(Integer.parseInt(((Click)ups.get(e.getXIndex())).getMonth())));
+                bundle.putLong("timestamp", (chartClicks.get(e.getXIndex())).getTimestamp());
+                bundle.putString("day", (chartClicks.get(e.getXIndex())).getDay());
+                bundle.putString("month", Utils.convertIntToLongMonth(Integer.parseInt((chartClicks.get(e.getXIndex())).getMonth())));
 //                bundle.putInt("ups", ((Click)ups.get(e.getXIndex())).getTotalClicks());
 //                bundle.putInt("downs", ((Click)downs.get(e.getXIndex())).getTotalClicks());
 
@@ -109,9 +209,9 @@ public class WeekActivity extends AppCompatActivity {
 //                bundle.putLong("timestamp", ((Click)ups.get(e.getXIndex())).getTimestamp());
 //                bundle.putString("day", ((Click)ups.get(e.getXIndex())).getDay());
 //                bundle.putString("day", Utils.convertIntToMonth(Integer.parseInt(((Click)ups.get(e.getXIndex())).getMonth())));
-
+//
 //                db.getDay(((Click)ups.get(e.getXIndex())).getTimestamp());
-
+//
 //                db.getDayPowerRelationship(((Click)ups.get(e.getXIndex())).getTimestamp());
 //                db.getDayPowerRelationship(((Click)ups.get(e.getXIndex())).getTimestamp());
 //                Log.e(TAG, "- "+ ((Click)ups.get(e.getXIndex())).getTotalClicks());

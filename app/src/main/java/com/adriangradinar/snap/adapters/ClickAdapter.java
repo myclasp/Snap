@@ -48,11 +48,11 @@ public class ClickAdapter extends BaseAdapter {
         View vi = convertView;
         final ViewHolder holder;
 
-        if (convertView == null) {
+//        if (convertView == null) {
             if (allClicks.get(position).getTotalClicks() == 1) {
-                vi = inflater.inflate(R.layout.up_click_item_layout, null);
+                vi = inflater.inflate(R.layout.up_click_item_layout, parent, false);
             } else {
-                vi = inflater.inflate(R.layout.down_click_item_layout, null);
+                vi = inflater.inflate(R.layout.down_click_item_layout, parent, false);
             }
 
             holder = new ViewHolder();
@@ -60,10 +60,15 @@ public class ClickAdapter extends BaseAdapter {
             holder.location_tv = (TextView) vi.findViewById(R.id.location_tv);
 
             vi.setTag(holder);
-        } else {
-            //the current view is being recycled
-            holder = (ViewHolder) vi.getTag();
-        }
+//        } else {
+//            //the current view is being recycled
+//            if (allClicks.get(position).getTotalClicks() == 1) {
+//                vi = inflater.inflate(R.layout.up_click_item_layout, parent, false);
+//            } else {
+//                vi = inflater.inflate(R.layout.down_click_item_layout, parent, false);
+//            }
+//            holder = (ViewHolder) vi.getTag();
+//        }
 
         final Click click = allClicks.get(position);
 

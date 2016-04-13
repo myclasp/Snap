@@ -11,10 +11,13 @@ import android.util.Log;
 import com.adriangradinar.snap.classes.Click;
 import com.adriangradinar.snap.classes.ClickAddress;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -267,28 +270,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<Click> selectLast7Days(){ //this does not include the current day's data
-
-        ArrayList<Click> ups = new ArrayList<>();
-        ArrayList<Click> downs = new ArrayList<>();
-
+        ArrayList<Click> allClicks = new ArrayList<>();
         try{
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action, t.clicks, t.timestamp FROM (SELECT "+TIMESTAMP+" as timestamp, "+NUMBER+" AS action, COUNT("+NUMBER+") AS clicks FROM "+TBL_CLICKS+" WHERE date("+TIMESTAMP+", 'unixepoch', 'localtime') BETWEEN date('now', '-7 days', 'localtime') AND date('now', '-1 day', 'localtime') GROUP BY "+NUMBER+", date("+TIMESTAMP+", 'unixepoch', 'localtime') ORDER BY "+TIMESTAMP+" ASC) AS t";
+            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action, t.clicks, t.timestamp FROM (SELECT " + TIMESTAMP + " as timestamp, " + NUMBER + " AS action, COUNT(" + NUMBER + ") AS clicks FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') BETWEEN date('now', '-7 days', 'localtime') AND date('now', '-1 day', 'localtime') GROUP BY " + NUMBER + ", date(" + TIMESTAMP + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + " ASC) AS t ORDER BY year, month, day, action";
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
 
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        if(cursor.getInt(3) == 1){
-                            ups.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-                        }
-                        else{
-                            downs.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-                        }
+                        allClicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
+//                        Log.e(TAG, cursor.getString(0) + " - " + cursor.getString(1) + " - " + cursor.getString(2) + " - " + cursor.getInt(3) + " - " + cursor.getInt(4) + " - " + cursor.getInt(5));
                     }
                     while (cursor.moveToNext());
                 }
-                ups.addAll(downs);
             } finally {
                 if (cursor != null)
                     cursor.close();
@@ -297,7 +292,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         catch (SQLiteDatabaseLockedException e){
             e.printStackTrace();
         }
-        return ups;
+        return allClicks;
     }
 
     /**
@@ -594,6 +589,67 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         Log.d(TAG, "Database download completed!");
+    }
+
+    public void readCSV(Context context, int file) {
+        deleteAllRecords();
+        InputStream inputStream = context.getResources().openRawResource(file);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            int i = 0;
+            String csvLine;
+            while ((csvLine = reader.readLine()) != null) {
+                if (++i > 2) {
+                    String[] row = csvLine.split(",");
+
+                    //insert the data into the database
+                    try {
+                        SQLiteDatabase db = this.getWritableDatabase();
+
+                        //allow the database to create the values to be insert
+                        ContentValues values = new ContentValues();
+                        values.put(ID, Integer.parseInt(row[0]));
+                        values.put(NUMBER, Integer.parseInt(row[1]));
+                        values.put(LAT, Double.parseDouble(row[2]));
+                        values.put(LON, Double.parseDouble(row[3]));
+                        values.put(ACC, Double.parseDouble(row[4]));
+
+                        //the damn split on the address comma :)
+                        if (row.length == 8) {
+                            values.put(ADDRESS, row[5] + ", " + row[6]);
+                            values.put(TIMESTAMP, Long.parseLong(row[7]));
+                        } else {
+                            values.put(ADDRESS, row[5]);
+                            values.put(TIMESTAMP, Long.parseLong(row[6]));
+                        }
+
+                        db.insert(TBL_CLICKS, null, values);
+                    } catch (SQLiteDatabaseLockedException e) {
+                        e.printStackTrace();
+                    }
+
+//                    if(row.length == 8)
+//                        Log.e(TAG, Integer.parseInt(row[0]) +" - " + Integer.parseInt(row[1]) +" - " + Double.parseDouble(row[2]) +" - " + Double.parseDouble(row[3]) +" - " + Double.parseDouble(row[4]) +" - " + row[5] + row[6] + row[7]);// +" - " + Long.parseLong(row[6]));
+//                    else
+//                        Log.e(TAG, Integer.parseInt(row[0]) +" - " + Integer.parseInt(row[1]) +" - " + Double.parseDouble(row[2]) +" - " + Double.parseDouble(row[3]) +" - " + Double.parseDouble(row[4]) +" - " + row[5] + row[6]);// +" - " + Long.parseLong(row[6]));
+                }
+            }
+            Log.d(TAG, "finished!");
+        } catch (IOException ex) {
+            throw new RuntimeException("Error in reading CSV file: " + ex);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException("Error while closing input stream: " + e);
+            }
+        }
+    }
+
+    public void deleteAllRecords() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TBL_CLICKS, null, null);
+        db.close();
     }
 
     @Override

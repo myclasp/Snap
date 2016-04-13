@@ -28,15 +28,10 @@ public class OverviewActivity extends AppCompatActivity {
 
         db = DatabaseHandler.getHelper(getApplicationContext());
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                setMostActiveDay();
-                setLeastActiveDay();
-                setHappiestDay();
-                setSaddestDay();
-            }
-        }).start();
+        setMostActiveDay();
+        setLeastActiveDay();
+        setHappiestDay();
+        setSaddestDay();
     }
 
     private void setMostActiveDay(){

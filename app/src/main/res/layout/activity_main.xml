@@ -35,7 +35,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="31dp"
-        android:text="Start!" />
+        android:text="Start!"
+        android:visibility="visible" />
 
     <ProgressBar
         android:id="@+id/progressBar"

@@ -103,8 +103,9 @@ public class MainActivity extends ActivityManagePermission {
         snapTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(MainActivity.this, DeepAnalysisActivity.class));
-                db.getCurrentMonth();
+//                db.readCSV(getApplicationContext(), R.raw.stats);
+//                startActivity(new Intent(MainActivity.this, DeepAnalysisActivity.class));
+//                db.getCurrentMonth();
             }
         });
 
@@ -114,7 +115,22 @@ public class MainActivity extends ActivityManagePermission {
             @Override
             public void onClick(View v) {
 //                generateClicks(2500);
-                db.downloadCSV(fullPath);
+                spinner.setVisibility(View.VISIBLE);
+                button.setVisibility(View.INVISIBLE);
+                ThreadManager.runInBackgroundThenUi(new Runnable() {
+                    @Override
+                    public void run() {
+                        db.downloadCSV(fullPath);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Download finished!", Toast.LENGTH_SHORT).show();
+                        spinner.setVisibility(View.INVISIBLE);
+                        button.setVisibility(View.VISIBLE);
+                    }
+                });
+
             }
         });
     }

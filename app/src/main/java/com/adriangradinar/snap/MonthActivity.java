@@ -63,38 +63,49 @@ public class MonthActivity extends AppCompatActivity {
                 db = DatabaseHandler.getHelper(getApplicationContext());
                 monthClicks = db.getCurrentMonth();
 
-                for (int i = 0; i < monthClicks.size() - 1; i++) {
-                    Click now = monthClicks.get(i);
-                    Click next = monthClicks.get(i + 1);
+                for (int i = 0; i < monthClicks.size(); i++) {
+                    if (i != monthClicks.size() - 1) {
+                        Click now = monthClicks.get(i);
+                        Click next = monthClicks.get(i + 1);
 
 //                    Log.e(TAG, now.getType() + " - " + next.getType());
 
-                    if (now.getType() == 1) {
-                        //we have ups
-                        if (now.getDay().equals(next.getDay())) {
-                            i++;
+                        if (now.getType() == 1) {
+                            //we have ups
+                            if (now.getDay().equals(next.getDay())) {
+                                i++;
 //                            Log.e(TAG, "we should be here");
-                            //we have both type of events in the same day
-                            if (now.getTotalClicks() > next.getTotalClicks()) {
-                                //ups win
-                                upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
-                            } else if (now.getTotalClicks() == next.getTotalClicks()) {
-                                //same value
-                                equalDecorators.add(CalendarDay.from(new Date(next.getTimestamp() * 1000)));
-                            } else if (now.getTotalClicks() < next.getTotalClicks()) {
-                                //downs win
-                                downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                                //we have both type of events in the same day
+                                if (now.getTotalClicks() > next.getTotalClicks()) {
+                                    //ups win
+                                    upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                                } else if (now.getTotalClicks() == next.getTotalClicks()) {
+                                    //same value
+                                    equalDecorators.add(CalendarDay.from(new Date(next.getTimestamp() * 1000)));
+                                } else if (now.getTotalClicks() < next.getTotalClicks()) {
+                                    //downs win
+                                    downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                                } else {
+                                    Log.e(TAG, "logic error");
+                                }
                             } else {
-                                Log.e(TAG, "logic error");
+                                //we only have ups
+                                upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
                             }
                         } else {
-                            //we only have ups
-                            upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                            //we only have downs
+                            downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
                         }
                     }
                     else{
-                        //we only have downs
-                        downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                        Click now = monthClicks.get(i);
+                        if (now.getType() == 1) {
+                            //we only have ups
+                            upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                        } else {
+                            //we only have ups
+                            downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                        }
                     }
                 }
             }

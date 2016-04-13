@@ -1,112 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/final_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingPrefix"
-    android:id="@+id/final_layout"
-    android:background="@drawable/background_image">
+    android:background="@drawable/background_image"
+    tools:ignore="MissingPrefix">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Most Active Day"
         android:id="@+id/textView1"
-        android:layout_marginLeft="5dp"
-        android:textSize="31sp"
-        android:textColor="@color/clasp_colour"
-        android:layout_alignTop="@+id/relativeLayout"
-        android:layout_toEndOf="@+id/relativeLayout"
-        android:layout_marginTop="-5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/relativeLayout"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="-5dp"
+        android:layout_toEndOf="@+id/relativeLayout"
+        android:text="Most Active Day"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="544 actions"
+        android:textColor="@color/clasp_colour"
+        android:textSize="31sp" />
+
+    <TextView
         android:id="@+id/tv_mad_actions"
-        android:textSize="26sp"
-        android:textColor="@color/dark_brown"
         fontPath="fonts/Lato-Light.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/relativeLayout"
         android:layout_alignStart="@+id/textView1"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Least Active Day"
-        android:id="@+id/textView2"
-        android:textSize="31sp"
-        android:textColor="@color/clasp_colour"
-        android:layout_alignTop="@+id/relativeLayout2"
-        android:layout_alignStart="@+id/tv_mad_actions"
-        android:layout_marginTop="-5dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginBottom="8dp"
         android:text="544 actions"
-        android:id="@+id/tv_lad_actions"
-        android:textSize="26sp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/dark_brown"
+        android:textSize="26sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_mad_actions"
+        android:layout_alignTop="@+id/relativeLayout2"
+        android:layout_marginTop="-5dp"
+        android:text="Least Active Day"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/clasp_colour"
+        android:textSize="31sp" />
+
+    <TextView
+        android:id="@+id/tv_lad_actions"
         fontPath="fonts/Lato-Light.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/relativeLayout2"
         android:layout_alignStart="@+id/textView2"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Most Up Day"
-        android:id="@+id/textView3"
-        android:textSize="31sp"
-        android:textColor="@color/up_primary"
-        android:layout_alignTop="@+id/relativeLayout3"
-        android:layout_alignStart="@+id/tv_lad_actions"
-        android:layout_marginTop="-5dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginBottom="8dp"
         android:text="544 actions"
-        android:id="@+id/tv_hd_actions"
-        android:textSize="26sp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/dark_brown"
+        android:textSize="26sp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_lad_actions"
+        android:layout_alignTop="@+id/relativeLayout3"
+        android:layout_marginTop="-5dp"
+        android:text="Most Up Day"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/up_primary"
+        android:textSize="31sp" />
+
+    <TextView
+        android:id="@+id/tv_hd_actions"
         fontPath="fonts/Lato-Light.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/relativeLayout3"
         android:layout_alignStart="@+id/textView3"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="544 actions"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Most Down Day"
-        android:id="@+id/textView4"
-        android:textSize="31sp"
-        android:textColor="@color/down_primary"
-        android:layout_alignTop="@+id/relativeLayout4"
-        android:layout_alignStart="@+id/tv_hd_actions"
-        android:layout_marginTop="-5dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="56 actions"
-        android:id="@+id/tv_sd_actions"
-        android:textSize="26sp"
         android:textColor="@color/dark_brown"
+        android:textSize="26sp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tv_hd_actions"
+        android:layout_alignTop="@+id/relativeLayout4"
+        android:layout_marginTop="-5dp"
+        android:text="Most Down Day"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/down_primary"
+        android:textSize="31sp" />
+
+    <TextView
+        android:id="@+id/tv_sd_actions"
         fontPath="fonts/Lato-Light.ttf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/relativeLayout4"
         android:layout_alignStart="@+id/textView4"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:text="56 actions"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/dark_brown"
+        android:textSize="26sp" />
 
     <!--<TextView-->
         <!--android:layout_width="wrap_content"-->
@@ -230,150 +230,161 @@
     <!--</TableLayout>-->
 
     <RelativeLayout
-        android:orientation="vertical"
-        android:layout_width="85dp"
-        android:layout_height="76dp"
-        android:background="@drawable/calendar_icon_clasp_small"
         android:id="@+id/relativeLayout"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="8dp">
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="24dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Sept 15"
-            android:id="@+id/tv_mad_month"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:gravity="center_vertical|center_horizontal"
-            android:textColor="@color/White"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="21"
-            android:id="@+id/tv_mad_day"
-            android:layout_below="@+id/tv_mad_month"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:gravity="center|center_horizontal"
-            android:textSize="42dp"
-            android:textColor="@color/dark_brown" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:orientation="vertical"
-        android:layout_width="85dp"
-        android:layout_height="76dp"
         android:background="@drawable/calendar_icon_clasp_small"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_mad_month"
+            android:layout_width="fill_parent"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Sept 15"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/White"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_mad_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tv_mad_month"
+            android:gravity="center|center_horizontal"
+            android:text="21"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/dark_brown"
+            android:textSize="42dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/relativeLayout2"
-        android:layout_below="@+id/tv_mad_actions"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
         android:layout_alignStart="@+id/relativeLayout"
-        android:layout_marginTop="10dp">
+        android:layout_below="@+id/tv_mad_actions"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/calendar_icon_clasp_small"
+        android:orientation="vertical">
 
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="24dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Nov 15"
             android:id="@+id/tv_lad_month"
-            android:layout_alignParentTop="true"
+            android:layout_width="fill_parent"
+            android:layout_height="24dp"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
+            android:text="Nov 15"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
             android:textSize="20sp" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="3"
             android:id="@+id/tv_lad_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_lad_month"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
             android:gravity="center|center_horizontal"
-            android:textSize="42dp"
-            android:textColor="@color/dark_brown" />
+            android:text="3"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/dark_brown"
+            android:textSize="42dp" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:orientation="vertical"
-        android:layout_width="85dp"
-        android:layout_height="76dp"
-        android:background="@drawable/calendar_icon_up_small"
         android:id="@+id/relativeLayout3"
-        android:layout_below="@+id/relativeLayout2"
+        android:layout_width="85dp"
+        android:layout_height="76dp"
         android:layout_alignStart="@+id/relativeLayout2"
-        android:layout_marginTop="10dp">
+        android:layout_below="@+id/relativeLayout2"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/calendar_icon_up_small"
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/tv_hd_month"
             android:layout_width="fill_parent"
             android:layout_height="24dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Jan 15"
-            android:id="@+id/tv_hd_month"
-            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
+            android:text="Jan 15"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/tv_hd_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="31"
-            android:id="@+id/tv_hd_day"
-            android:layout_below="@+id/tv_hd_month"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tv_hd_month"
             android:gravity="center|center_horizontal"
-            android:textSize="42dp"
-            android:textColor="@color/dark_brown" />
+            android:text="31"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/dark_brown"
+            android:textSize="42dp" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:orientation="vertical"
+        android:id="@+id/relativeLayout4"
         android:layout_width="85dp"
         android:layout_height="76dp"
-        android:background="@drawable/calendar_icon_down_small"
-        android:id="@+id/relativeLayout4"
-        android:layout_below="@+id/tv_hd_actions"
         android:layout_alignStart="@+id/relativeLayout3"
-        android:layout_marginTop="10dp">
+        android:layout_below="@+id/tv_hd_actions"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/calendar_icon_down_small"
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/tv_sd_month"
             android:layout_width="fill_parent"
             android:layout_height="24dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Jul 14"
-            android:id="@+id/tv_sd_month"
-            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
+            android:text="Jul 14"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
             android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/tv_sd_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="17"
-            android:id="@+id/tv_sd_day"
-            android:layout_below="@+id/tv_sd_month"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tv_sd_month"
             android:gravity="center|center_horizontal"
-            android:textSize="42dp"
-            android:textColor="@color/dark_brown" />
+            android:text="17"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/dark_brown"
+            android:textSize="42dp" />
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:text="v0.3.5"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

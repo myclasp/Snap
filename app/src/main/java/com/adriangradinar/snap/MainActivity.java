@@ -31,6 +31,7 @@ public class MainActivity extends ActivityManagePermission {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LIMIT = 20;
     private static String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Snap";
+    private long analytics_timestamp = 0;
     private DatabaseHandler db;
     private long currentTimestamp;
     private Button button;
@@ -120,7 +121,8 @@ public class MainActivity extends ActivityManagePermission {
                 ThreadManager.runInBackgroundThenUi(new Runnable() {
                     @Override
                     public void run() {
-                        db.downloadCSV(fullPath);
+                        db.downloadClicks(fullPath);
+                        db.downloadAnalytics(fullPath);
                     }
                 }, new Runnable() {
                     @Override
@@ -176,12 +178,24 @@ public class MainActivity extends ActivityManagePermission {
         currentTimestamp = Utils.getTimestamp() - (604800 * 3); //take 3 weeks off
         final Random random = new Random();
 
-        for(int i = 0; i < total; i++){
+        for (int i = 0; i < total; i++) {
             //increment the timestamp
-            currentTimestamp += Utils.randInt(random, 60*5, 60*30); //between 5min and 30min
+            currentTimestamp += Utils.randInt(random, 60 * 5, 60 * 30); //between 5min and 30min
             db.addClick(new Click(Utils.randInt(random, 1, 2), 54.048775, -2.806450, 10.0, "dummy address", currentTimestamp));
         }
         Log.e(TAG, "Generation finished!");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        db.addActivityAnalytic(TAG, analytics_timestamp, (Utils.getTimestamp() - analytics_timestamp));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        analytics_timestamp = Utils.getTimestamp();
     }
 
     @Override

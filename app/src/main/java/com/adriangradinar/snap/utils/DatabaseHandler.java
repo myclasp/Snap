@@ -29,7 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHandler.class.getSimpleName();
 
     //database version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 6;
     //database name
     private static final String DATABASE_NAME = "snapino_database";
 
@@ -42,6 +42,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String ACC = "click_accuracy";
     private static final String ADDRESS = "click_address";
     private static final String TIMESTAMP = "click_timestamp";
+
+    private static final String TBL_ACTIVITY_ANALYTICS = "tbl_activity_analytics";
+    private static final String ACTIVITY_NAME = "activity_name";
+    private static final String START_TIMESTAMP = "start_timestamp"; //the start of the interaction
+    private static final String DURATION = "duration"; //the duration of the interaction
+
+//    private static final String TBL_DELETED = "tbl_deleted";
 
     private static DatabaseHandler instance;
 
@@ -62,6 +69,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + ID + " INTEGER PRIMARY KEY, " + NUMBER + " INTEGER, "
                 + LAT + " TEXT, " + LON + " TEXT, " + ACC + " REAL, "
                 + ADDRESS + " TEXT, " + TIMESTAMP + " TEXT" + ")";
+
         db.setLocale(Locale.UK);
         db.execSQL(CREATE_LOCATIONS_TABLE);
         db.execSQL("CREATE INDEX DATE ON " + TBL_CLICKS + " ("+TIMESTAMP+")");
@@ -74,7 +82,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+//        Log.e(TAG, ""+oldVersion + " - " + newVersion);
+
+//        db.execSQL("DROP TABLE IF EXISTS " + TBL_ACTIVITY_ANALYTICS);
+        String CREATE_ACTIVITY_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_ACTIVITY_ANALYTICS + "("
+                + ID + " INTEGER PRIMARY KEY, " + ACTIVITY_NAME + " TEXT, "
+                + START_TIMESTAMP + " TEXT, " + DURATION + " INTEGER" + ")";
+        db.setLocale(Locale.UK);
+        db.execSQL(CREATE_ACTIVITY_ANALYTICS_TABLE);
+    }
 
     public void addClick(Click click) {
         //insert the data into the database
@@ -160,8 +177,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        values[0] = cursor.getString(0).substring(2); //year
-                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+//                        values[0] = cursor.getString(0).substring(2); //year
+//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+                        values[0] = cursor.getString(0); //year
+                        values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
                         values[3] = cursor.getString(3); //clicks
                         values[4] = cursor.getString(4); //timestamp
@@ -190,8 +209,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        values[0] = cursor.getString(0).substring(2); //year
-                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+//                        values[0] = cursor.getString(0).substring(2); //year
+//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+                        values[0] = cursor.getString(0); //year
+                        values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
                         values[3] = cursor.getString(3); //clicks
                         values[4] = cursor.getString(4); //timestamp
@@ -220,8 +241,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        values[0] = cursor.getString(0).substring(2); //year
-                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+//                        values[0] = cursor.getString(0).substring(2); //year
+//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+                        values[0] = cursor.getString(0); //year
+                        values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
                         values[3] = cursor.getString(3); //clicks
                         values[4] = cursor.getString(4); //timestamp
@@ -250,8 +273,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        values[0] = cursor.getString(0).substring(2); //year
-                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+//                        values[0] = cursor.getString(0).substring(2); //year
+                        values[0] = cursor.getString(0); //year
+//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+                        values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
                         values[3] = cursor.getString(3); //clicks
                         values[4] = cursor.getString(4); //timestamp
@@ -535,7 +560,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
-    public void downloadCSV(String fullPath) {
+    public void downloadClicks(String fullPath) {
         try {
             File dir = new File(fullPath);
 
@@ -545,7 +570,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
 
             if (isDirectoryCreated) {
-                File myFile = new File(fullPath, "database_" + Utils.getTimestamp() + ".txt");
+                File myFile = new File(fullPath, "clicks_" + Utils.getTimestamp() + ".txt");
 
                 boolean isFileCreated = myFile.exists();
                 if (!isFileCreated) {
@@ -566,6 +591,62 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                             if (cursor.moveToFirst()) {
                                 do {
                                     printWriter.println(cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getDouble(2) + "," + cursor.getDouble(3) + "," + cursor.getDouble(4) + "," + cursor.getString(5).replaceAll("\\n", " ") + "," + cursor.getLong(6));
+                                }
+                                while (cursor.moveToNext());
+                            }
+                        } finally {
+                            if (cursor != null)
+                                cursor.close();
+                        }
+                    } catch (SQLiteDatabaseLockedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        printWriter.close();
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "Couldn't find the file");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "An I/O Error occurred");
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "Database download completed!");
+    }
+
+    public void downloadAnalytics(String fullPath) {
+        try {
+            File dir = new File(fullPath);
+
+            boolean isDirectoryCreated = dir.exists();
+            if (!isDirectoryCreated) {
+                isDirectoryCreated = dir.mkdir();
+            }
+
+            if (isDirectoryCreated) {
+                File myFile = new File(fullPath, "analytics_" + Utils.getTimestamp() + ".txt");
+
+                boolean isFileCreated = myFile.exists();
+                if (!isFileCreated) {
+                    isFileCreated = myFile.createNewFile();
+                }
+
+                if (isFileCreated) {
+                    PrintWriter printWriter = new PrintWriter(new FileWriter(myFile));
+                    printWriter.println(TBL_ACTIVITY_ANALYTICS + "@" + Utils.getTimestamp());
+                    printWriter.println(ID + "," + ACTIVITY_NAME + "," + START_TIMESTAMP + "," + DURATION);
+
+                    try {
+                        String sql = "SELECT * FROM " + TBL_ACTIVITY_ANALYTICS + " ORDER BY " + ID;
+                        SQLiteDatabase db = this.getWritableDatabase();
+                        Cursor cursor = db.rawQuery(sql, null);
+
+                        try {
+                            if (cursor.moveToFirst()) {
+                                do {
+                                    printWriter.println(cursor.getInt(0) + "," + cursor.getString(1) + "," + cursor.getLong(2) + "," + cursor.getLong(3));
                                 }
                                 while (cursor.moveToNext());
                             }
@@ -641,8 +722,50 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                throw new RuntimeException("Error while closing input stream: " + e);
+                e.printStackTrace();
             }
+        }
+    }
+
+    public void addActivityAnalytic(String activityName, long startTime, long duration) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            //allow the database to create the values to be insert
+            ContentValues values = new ContentValues();
+            values.put(ACTIVITY_NAME, activityName);
+            values.put(START_TIMESTAMP, startTime);
+            values.put(DURATION, duration);
+
+            db.insert(TBL_ACTIVITY_ANALYTICS, null, values);
+//            Log.w(TAG, "Analytic inserted into the database!");
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void logAnalytics() {
+        try {
+            String sql = "SELECT * FROM " + TBL_ACTIVITY_ANALYTICS + " ORDER BY " + ID;
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            Cursor cursor = db.rawQuery(sql, null);
+
+            //save every event to the events list array
+            try {
+                if (cursor.moveToFirst()) {
+                    do {
+                        Log.e("analytics", cursor.getInt(0) + " - " + cursor.getString(1) + " - " + new Date(cursor.getLong(2) * 1000) + " - " + cursor.getLong(3));
+                    }
+                    while (cursor.moveToNext());
+                }
+            } finally {
+                if (cursor != null)
+                    cursor.close();
+            }
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
         }
     }
 

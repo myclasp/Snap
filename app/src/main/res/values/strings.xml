@@ -5,5 +5,13 @@
     <string name="title_activity_overview">Overview</string>
     <string name="title_activity_week">Last 7 Days</string>
     <string name="title_activity_month">Current Month</string>
-    <string name="title_activity_daily">...</string>
+    <string name="title_activity_daily">Daily Activity</string>
+    <string name="most_active_day">Most Active Day</string>
+    <string name="x_actions">x actions</string>
+    <string name="least_active_day">Least Active Day</string>
+    <string name="most_up_day">Most Up Day</string>
+    <string name="most_down_day">Most Down Day</string>
+    <string name="sept_15">Sept 15</string>
+    <string name="x_number">21</string>
+    <string name="app_version">v0.3.6</string>
 </resources>

@@ -45,7 +45,7 @@ public class ClickAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        View vi = convertView;
+        View vi;
         final ViewHolder holder;
 
 //        if (convertView == null) {

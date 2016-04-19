@@ -21,6 +21,8 @@ import java.util.Set;
 
 public class DeepAnalysisActivity extends AppCompatActivity {
 
+//    private static final String TAG = DeepAnalysisActivity.class.getSimpleName();
+
     private LineChart mChart;
 
     @Override
@@ -31,29 +33,31 @@ public class DeepAnalysisActivity extends AppCompatActivity {
         setTitle("Hourly view");
 
         mChart = (LineChart) findViewById(R.id.chart1);
-        mChart.setDrawGridBackground(false);
-        mChart.getLegend().setEnabled(false);
-        mChart.setDescription("");
-        mChart.setDoubleTapToZoomEnabled(false);
-        mChart.setPinchZoom(false);
-        mChart.setTouchEnabled(false);
+        if (mChart != null) {
+            mChart.setDrawGridBackground(false);
+            mChart.getLegend().setEnabled(false);
+            mChart.setDescription("");
+            mChart.setDoubleTapToZoomEnabled(false);
+            mChart.setPinchZoom(false);
+            mChart.setTouchEnabled(false);
 
-        XAxis xAxis = mChart.getXAxis();
-        xAxis.setDrawGridLines(false);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setSpaceBetweenLabels(2);
+            XAxis xAxis = mChart.getXAxis();
+            xAxis.setDrawGridLines(false);
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setSpaceBetweenLabels(2);
 
-        YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setDrawAxisLine(false);
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setDrawLabels(false);
+            YAxis leftAxis = mChart.getAxisLeft();
+            leftAxis.setDrawAxisLine(false);
+            leftAxis.setDrawGridLines(false);
+            leftAxis.setDrawLabels(false);
 
-        YAxis rightAxis = mChart.getAxisRight();
-        rightAxis.setDrawAxisLine(false);
-        rightAxis.setDrawGridLines(false);
-        rightAxis.setDrawLabels(false);
+            YAxis rightAxis = mChart.getAxisRight();
+            rightAxis.setDrawAxisLine(false);
+            rightAxis.setDrawGridLines(false);
+            rightAxis.setDrawLabels(false);
 
-        mChart.setData(generateLineData());
+            mChart.setData(generateLineData());
+        }
     }
 
     @Override
@@ -111,7 +115,6 @@ public class DeepAnalysisActivity extends AppCompatActivity {
         sets.add(upsLineDataSet);
         sets.add(downsLineDataSet);
 
-        LineData d = new LineData(labels,  sets);
-        return d;
+        return new LineData(labels, sets);
     }
 }

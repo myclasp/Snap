@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.adriangradinar.snap.classes.Click;
+import com.adriangradinar.snap.classes.TypefaceSpan;
 import com.adriangradinar.snap.utils.DatabaseHandler;
 import com.adriangradinar.snap.utils.ThreadManager;
 import com.adriangradinar.snap.utils.Utils;
@@ -35,6 +36,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class MonthActivity extends AppCompatActivity {
 
     private final static String TAG = MonthActivity.class.getSimpleName();
+    private long analytics_timestamp = 0;
+
     private MaterialCalendarView materialCalendarView;
     private DatabaseHandler db;
     private ArrayList<Click> monthClicks;
@@ -48,6 +51,10 @@ public class MonthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_month);
+
+        //set the title
+        Utils.setActionBarTextAndFont(getSupportActionBar(), new TypefaceSpan(this, "BebasNeue Bold.ttf"), "Month View");
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -163,6 +170,18 @@ public class MonthActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        db.addActivityAnalytic(TAG, analytics_timestamp, (Utils.getTimestamp() - analytics_timestamp));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        analytics_timestamp = Utils.getTimestamp();
     }
 
     @Override

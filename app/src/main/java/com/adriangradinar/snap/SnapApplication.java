@@ -9,6 +9,7 @@ public class SnapApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/BebasNeue Bold.ttf")
                         .setFontAttrId(R.attr.fontPath)

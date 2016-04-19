@@ -10,12 +10,19 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.ActionBar;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Log;
 
 import com.adriangradinar.snap.MainActivity;
+import com.adriangradinar.snap.classes.TypefaceSpan;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -27,6 +34,26 @@ public class Utils {
     public static long getTimestamp(){
         return System.currentTimeMillis() / 1000;
     }
+
+    public static String getDayName(long timestamp) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EE", Locale.getDefault());
+        return simpleDateFormat.format(new Date(timestamp * 1000));
+    }
+
+    public static void setActionBarTextAndFont(ActionBar actionBar, SimpleDateFormat simpleDateFormat, Date date, TypefaceSpan typefaceSpan) {
+        SpannableString nameDay = new SpannableString(simpleDateFormat.format(date));
+        nameDay.setSpan(typefaceSpan, 0, nameDay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (actionBar != null)
+            actionBar.setTitle(nameDay);
+    }
+
+    public static void setActionBarTextAndFont(ActionBar actionBar, TypefaceSpan typefaceSpan, String textTitle) {
+        SpannableString title = new SpannableString(textTitle);
+        title.setSpan(typefaceSpan, 0, title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (actionBar != null)
+            actionBar.setTitle(title);
+    }
+
 
     public static int randInt(Random random, int min, int max) {
         return random.nextInt((max - min) + 1) + min;

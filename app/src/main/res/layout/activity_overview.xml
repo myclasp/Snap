@@ -12,10 +12,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/relativeLayout"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="-5dp"
         android:layout_toEndOf="@+id/relativeLayout"
-        android:text="Most Active Day"
+        android:text="@string/most_active_day"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/clasp_colour"
         android:textSize="31sp" />
@@ -28,7 +28,7 @@
         android:layout_alignBottom="@+id/relativeLayout"
         android:layout_alignStart="@+id/textView1"
         android:layout_marginBottom="8dp"
-        android:text="544 actions"
+        android:text="@string/x_actions"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/dark_brown"
         android:textSize="26sp" />
@@ -40,7 +40,7 @@
         android:layout_alignStart="@+id/tv_mad_actions"
         android:layout_alignTop="@+id/relativeLayout2"
         android:layout_marginTop="-5dp"
-        android:text="Least Active Day"
+        android:text="@string/least_active_day"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/clasp_colour"
         android:textSize="31sp" />
@@ -53,7 +53,7 @@
         android:layout_alignBottom="@+id/relativeLayout2"
         android:layout_alignStart="@+id/textView2"
         android:layout_marginBottom="8dp"
-        android:text="544 actions"
+        android:text="@string/x_actions"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/dark_brown"
         android:textSize="26sp" />
@@ -65,7 +65,7 @@
         android:layout_alignStart="@+id/tv_lad_actions"
         android:layout_alignTop="@+id/relativeLayout3"
         android:layout_marginTop="-5dp"
-        android:text="Most Up Day"
+        android:text="@string/most_up_day"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/up_primary"
         android:textSize="31sp" />
@@ -78,7 +78,7 @@
         android:layout_alignBottom="@+id/relativeLayout3"
         android:layout_alignStart="@+id/textView3"
         android:layout_marginBottom="8dp"
-        android:text="544 actions"
+        android:text="@string/x_actions"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/dark_brown"
         android:textSize="26sp" />
@@ -90,7 +90,7 @@
         android:layout_alignStart="@+id/tv_hd_actions"
         android:layout_alignTop="@+id/relativeLayout4"
         android:layout_marginTop="-5dp"
-        android:text="Most Down Day"
+        android:text="@string/most_down_day"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/down_primary"
         android:textSize="31sp" />
@@ -103,7 +103,7 @@
         android:layout_alignBottom="@+id/relativeLayout4"
         android:layout_alignStart="@+id/textView4"
         android:layout_marginBottom="8dp"
-        android:text="56 actions"
+        android:text="@string/x_actions"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/dark_brown"
         android:textSize="26sp" />
@@ -233,7 +233,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="85dp"
         android:layout_height="76dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/calendar_icon_clasp_small"
         android:orientation="vertical">
@@ -245,7 +245,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Sept 15"
+            android:text="@string/sept_15"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
             android:textSize="20sp" />
@@ -259,10 +259,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_mad_month"
             android:gravity="center|center_horizontal"
-            android:text="21"
+            android:text="@string/x_number"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42dp" />
+            android:textSize="42sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -282,7 +282,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Nov 15"
+            android:text="@string/x_number"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
             android:textSize="20sp" />
@@ -296,10 +296,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_lad_month"
             android:gravity="center|center_horizontal"
-            android:text="3"
+            android:text="@string/x_number"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42dp" />
+            android:textSize="42sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -319,7 +319,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Jan 15"
+            android:text="@string/x_number"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
             android:textSize="20sp" />
@@ -333,10 +333,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_hd_month"
             android:gravity="center|center_horizontal"
-            android:text="31"
+            android:text="@string/x_number"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42dp" />
+            android:textSize="42sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -356,7 +356,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Jul 14"
+            android:text="@string/x_number"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
             android:textSize="20sp" />
@@ -370,10 +370,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_sd_month"
             android:gravity="center|center_horizontal"
-            android:text="17"
+            android:text="@string/x_number"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42dp" />
+            android:textSize="42sp" />
     </RelativeLayout>
 
     <TextView
@@ -383,8 +383,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="5dp"
-        android:layout_marginRight="5dp"
-        android:text="v0.3.5"
+        android:layout_marginEnd="5dp"
+        android:text="@string/app_version"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

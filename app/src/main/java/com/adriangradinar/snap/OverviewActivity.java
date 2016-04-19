@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adriangradinar.snap.classes.TypefaceSpan;
 import com.adriangradinar.snap.utils.DatabaseHandler;
 import com.adriangradinar.snap.utils.Utils;
 
@@ -19,12 +20,17 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class OverviewActivity extends AppCompatActivity {
 
     private static final String TAG = OverviewActivity.class.getSimpleName();
+    private long analytics_timestamp = 0;
+
     private DatabaseHandler db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
+
+        //set the title
+        Utils.setActionBarTextAndFont(getSupportActionBar(), new TypefaceSpan(this, "BebasNeue Bold.ttf"), "Overview");
 
         db = DatabaseHandler.getHelper(getApplicationContext());
 
@@ -56,11 +62,18 @@ public class OverviewActivity extends AppCompatActivity {
         assert tv_mad_month != null;
         assert tv_mad_day != null;
         assert tv_mad_actions != null;
-        String t = values[1] + " " + values[0];
+
+        String t = values[2] + "." + values[1] + "." + values[0];
         tv_mad_month.setText(t);
-        tv_mad_day.setText(String.valueOf(values[2]));
+        tv_mad_day.setText(String.valueOf(Utils.getDayName(Long.parseLong(values[4]))));
         values[3] += " actions.";
         tv_mad_actions.setText(values[3]);
+
+//        String t = values[1] + " " + values[0];
+//        tv_mad_month.setText(t);
+//        tv_mad_day.setText(String.valueOf(values[2]));
+//        values[3] += " actions.";
+//        tv_mad_actions.setText(values[3]);
     }
 
     private void setLeastActiveDay(){
@@ -75,7 +88,8 @@ public class OverviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (values[1] != null) {
-                    navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+//                    navigateToTheNExtView(Long.parseLong(values[4]), Utils.convertStringToLongMonth(values[1]), values[2]);
+                    navigateToTheNExtView(Long.parseLong(values[4]), values[1], values[2]);
                 } else {
                     Toast.makeText(getApplicationContext(), "No data for this!", Toast.LENGTH_SHORT).show();
                 }
@@ -85,11 +99,18 @@ public class OverviewActivity extends AppCompatActivity {
         assert tv_lad_month != null;
         assert tv_lad_day != null;
         assert tv_lad_actions != null;
-        String t = values[1] + " " + values[0];
+
+        String t = values[2] + "." + values[1] + "." + values[0];
         tv_lad_month.setText(t);
-        tv_lad_day.setText(String.valueOf(values[2]));
+        tv_lad_day.setText(String.valueOf(Utils.getDayName(Long.parseLong(values[4]))));
         values[3] += " actions.";
         tv_lad_actions.setText(values[3]);
+
+//        String t = values[1] + " " + values[0];
+//        tv_lad_month.setText(t);
+//        tv_lad_day.setText(String.valueOf(values[2]));
+//        values[3] += " actions.";
+//        tv_lad_actions.setText(values[3]);
     }
 
     private void setHappiestDay(){
@@ -114,11 +135,18 @@ public class OverviewActivity extends AppCompatActivity {
         assert tv_hd_month != null;
         assert tv_hd_day != null;
         assert tv_hd_actions != null;
-        String t = values[1] + " " + values[0];
+
+        String t = values[2] + "." + values[1] + "." + values[0];
         tv_hd_month.setText(t);
-        tv_hd_day.setText(String.valueOf(values[2]));
+        tv_hd_day.setText(String.valueOf(Utils.getDayName(Long.parseLong(values[4]))));
         values[3] += " actions.";
         tv_hd_actions.setText(values[3]);
+
+//        String t = values[1] + " " + values[0];
+//        tv_hd_month.setText(t);
+//        tv_hd_day.setText(String.valueOf(values[2]));
+//        values[3] += " actions.";
+//        tv_hd_actions.setText(values[3]);
     }
 
     private void setSaddestDay(){
@@ -143,11 +171,18 @@ public class OverviewActivity extends AppCompatActivity {
         assert tv_sd_month != null;
         assert tv_sd_day != null;
         assert tv_sd_actions != null;
-        String t = values[1] + " " + values[0];
+
+        String t = values[2] + "." + values[1] + "." + values[0];
         tv_sd_month.setText(t);
-        tv_sd_day.setText(String.valueOf(values[2]));
+        tv_sd_day.setText(String.valueOf(Utils.getDayName(Long.parseLong(values[4]))));
         values[3] += " actions.";
         tv_sd_actions.setText(values[3]);
+
+//        String t = values[1] + " " + values[0];
+//        tv_sd_month.setText(t);
+//        tv_sd_day.setText(String.valueOf(values[2]));
+//        values[3] += " actions.";
+//        tv_sd_actions.setText(values[3]);
     }
 
     private void navigateToTheNExtView(long timestamp, String month, String day){
@@ -183,6 +218,18 @@ public class OverviewActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        db.addActivityAnalytic(TAG, analytics_timestamp, (Utils.getTimestamp() - analytics_timestamp));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        analytics_timestamp = Utils.getTimestamp();
     }
 
     @Override

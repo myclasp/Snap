@@ -10,17 +10,24 @@ import android.widget.TextView;
 
 import com.adriangradinar.snap.adapters.ClickAdapter;
 import com.adriangradinar.snap.classes.Click;
+import com.adriangradinar.snap.classes.TypefaceSpan;
 import com.adriangradinar.snap.utils.DatabaseHandler;
+import com.adriangradinar.snap.utils.Utils;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class DailyActivity extends AppCompatActivity {
 
     private static final String TAG = DailyActivity.class.getSimpleName();
+    private long analytics_timestamp = 0;
+
     private DatabaseHandler db;
     private Activity activity;
 
@@ -31,7 +38,6 @@ public class DailyActivity extends AppCompatActivity {
 
     private int upsCount = 0;
     private int downsCount = 0;
-    private int totalCount = 0;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -66,14 +72,14 @@ public class DailyActivity extends AppCompatActivity {
                 downsCount++;
             }
         }
-        totalCount = upsCount + downsCount;
+        int totalCount = upsCount + downsCount;
 
         clickAdapter = new ClickAdapter(activity, all);
         assert listview != null;
         listview.setAdapter(clickAdapter);
 
-        //set the title to the selected day
-        setTitle(b.getString("day") + " " + b.getString("month"));
+        //set the title
+        Utils.setActionBarTextAndFont(getSupportActionBar(), new SimpleDateFormat("EE dd.MM.yyyy", Locale.getDefault()), new Date(b.getLong("timestamp") * 1000), new TypefaceSpan(getApplicationContext(), "BebasNeue Bold.ttf"));
 
         //set the values and the listeners
         TextView upsTV = ((TextView) findViewById(R.id.ups_tv));
@@ -120,7 +126,7 @@ public class DailyActivity extends AppCompatActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-//    private void setWeekView(int ups, int downs){
+    //    private void setWeekView(int ups, int downs){
 //        PieChart pieChart = (PieChart) findViewById(R.id.day_pie_chart);
 //        pieChart.setDescription("");
 //        pieChart.getLegend().setEnabled(false);
@@ -180,6 +186,18 @@ public class DailyActivity extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        db.addActivityAnalytic(TAG, analytics_timestamp, (Utils.getTimestamp() - analytics_timestamp));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        analytics_timestamp = Utils.getTimestamp();
     }
 
     @Override

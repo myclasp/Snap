@@ -54,7 +54,7 @@
         </receiver>
 
         <activity
-            android:name=".DeepAnalysisActivity"
+            android:name=".HourlyActivity"
             android:screenOrientation="landscape" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for

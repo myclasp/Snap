@@ -3,19 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DailyActivity"
-    android:background="@drawable/background_image">
+    android:background="@drawable/background_image"
+    tools:context=".DailyActivity">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tableLayout1"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_alignParentStart="true">
+        android:layout_marginTop="5dp">
 
         <TableRow
             android:id="@+id/tableRow1"
@@ -25,37 +25,49 @@
 
             <TextView
                 android:id="@+id/all_tv"
-                android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
-                android:textColor="#fff"
-                android:textSize="36sp"
-                android:gravity="center_vertical|center_horizontal"
+                android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:background="@color/clasp_colour" />
+                android:background="@color/clasp_colour"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="#fff"
+                android:textSize="36sp" />
 
             <Space android:layout_width="2dp" />
 
             <TextView
                 android:id="@+id/ups_tv"
-                android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
-                android:textColor="#fff"
-                android:textSize="36sp"
-                android:gravity="center_vertical|center_horizontal"
+                android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:background="@color/up_primary" />
+                android:background="@color/up_primary"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="#fff"
+                android:textSize="36sp" />
 
             <Space android:layout_width="2dp" />
 
             <TextView
                 android:id="@+id/downs_tv"
-                android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
-                android:textColor="#fff"
-                android:textSize="36sp"
-                android:gravity="center_vertical|center_horizontal"
+                android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:background="@color/down_primary" />
+                android:background="@color/down_primary"
+                android:gravity="center_vertical|center_horizontal"
+                android:textColor="#fff"
+                android:textSize="36sp" />
+
+            <!--<Space android:layout_width="2dp" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/disabled_tv"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:textColor="#fff"-->
+            <!--android:textSize="36sp"-->
+            <!--android:gravity="center_vertical|center_horizontal"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@color/action_disabled" />-->
         </TableRow>
     </TableLayout>
 
@@ -67,16 +79,16 @@
         <!--android:layout_alignParentStart="true" />-->
 
     <ListView
+        android:id="@+id/listView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/listView"
-        android:layout_below="@+id/tableLayout1"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/tableLayout1"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
         android:divider="@null"
-        android:dividerHeight="10dp"
-        android:layout_marginBottom="5dp" />
+        android:dividerHeight="10dp" />
 
 </RelativeLayout>

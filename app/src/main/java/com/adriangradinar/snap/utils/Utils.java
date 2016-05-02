@@ -35,8 +35,13 @@ public class Utils {
         return System.currentTimeMillis() / 1000;
     }
 
-    public static String getDayName(long timestamp) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EE", Locale.getDefault());
+    public static String getLongDayName(long timestamp) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+        return simpleDateFormat.format(new Date(timestamp * 1000));
+    }
+
+    public static String getShortDayName(long timestamp) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E", Locale.getDefault());
         return simpleDateFormat.format(new Date(timestamp * 1000));
     }
 
@@ -53,7 +58,6 @@ public class Utils {
         if (actionBar != null)
             actionBar.setTitle(title);
     }
-
 
     public static int randInt(Random random, int min, int max) {
         return random.nextInt((max - min) + 1) + min;

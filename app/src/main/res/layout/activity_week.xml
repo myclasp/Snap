@@ -3,28 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WeekActivity"
-    android:background="@drawable/background_image">
+    android:background="@drawable/background_image"
+    tools:context=".WeekActivity">
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chartUp"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_margin="5dp" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Other analytics will be added here in ver. 0.4"
-        android:id="@+id/textView"
-        android:layout_below="@+id/chartUp"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/chartUp"
         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
-        android:textSize="28sp"
-        android:layout_marginRight="10dp" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="28sp" />
 
 </RelativeLayout>

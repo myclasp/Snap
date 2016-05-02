@@ -26,7 +26,7 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
 
     //import the fonts
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
@@ -45,6 +45,12 @@ dependencies {
 
     //import the location play services
     compile 'com.google.android.gms:play-services:8.4.0'
+
+    //import the recycle view
+    compile 'com.android.support:recyclerview-v7:23.3.0'
+
+    //import a swipe library
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
 }
 
 apply plugin: 'com.google.gms.google-services'

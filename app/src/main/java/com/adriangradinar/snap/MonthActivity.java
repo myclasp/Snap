@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -43,9 +42,13 @@ public class MonthActivity extends AppCompatActivity {
     private ArrayList<Click> monthClicks;
 
     private List<CalendarDay> upDecorators = new ArrayList<>();
+    private List<CalendarDay> upMarkedDecorators = new ArrayList<>();
     private List<CalendarDay> downDecorators = new ArrayList<>();
+    private List<CalendarDay> downMarkedDecorators = new ArrayList<>();
     private List<CalendarDay> equalDecorators = new ArrayList<>();
-//    private Click up, down;
+    private List<CalendarDay> equalMarkedDecorators = new ArrayList<>();
+    private List<CalendarDay> emptyDecorators = new ArrayList<>();
+    private List<CalendarDay> emptyMarkedDecorators = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,64 +57,67 @@ public class MonthActivity extends AppCompatActivity {
 
         //set the title
         Utils.setActionBarTextAndFont(getSupportActionBar(), new TypefaceSpan(this, "BebasNeue Bold.ttf"), "Month View");
+        db = DatabaseHandler.getHelper(getApplicationContext());
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                setView();
-            }
-        }).start();
+        materialCalendarView = (MaterialCalendarView) findViewById(R.id.calendarView);
     }
 
     public void setView(){
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                db = DatabaseHandler.getHelper(getApplicationContext());
                 monthClicks = db.getCurrentMonth();
 
-                for (int i = 0; i < monthClicks.size(); i++) {
-                    if (i != monthClicks.size() - 1) {
-                        Click now = monthClicks.get(i);
-                        Click next = monthClicks.get(i + 1);
+                //clear the decorators
+                upDecorators.clear();
+                upMarkedDecorators.clear();
+                downDecorators.clear();
+                downMarkedDecorators.clear();
+                equalDecorators.clear();
+                equalMarkedDecorators.clear();
+                emptyDecorators.clear();
+                emptyMarkedDecorators.clear();
 
-//                    Log.e(TAG, now.getType() + " - " + next.getType());
-
-                        if (now.getType() == 1) {
-                            //we have ups
-                            if (now.getDay().equals(next.getDay())) {
-                                i++;
-//                            Log.e(TAG, "we should be here");
-                                //we have both type of events in the same day
-                                if (now.getTotalClicks() > next.getTotalClicks()) {
-                                    //ups win
-                                    upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
-                                } else if (now.getTotalClicks() == next.getTotalClicks()) {
-                                    //same value
-                                    equalDecorators.add(CalendarDay.from(new Date(next.getTimestamp() * 1000)));
-                                } else if (now.getTotalClicks() < next.getTotalClicks()) {
-                                    //downs win
-                                    downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
-                                } else {
-                                    Log.e(TAG, "logic error");
-                                }
-                            } else {
-                                //we only have ups
-                                upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
-                            }
+                for (Click click : monthClicks) {
+                    if (click.getUpDay() == 1) {
+                        //up day
+                        if (click.getTotalMarked() != 0) {
+                            //marked day
+                            upMarkedDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
                         } else {
-                            //we only have downs
-                            downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                            //unmarked day
+                            upDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
+                        }
+                    } else if (click.getDownDay() == 1) {
+                        //down day
+                        if (click.getTotalMarked() != 0) {
+                            //marked day
+                            downMarkedDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
+                        } else {
+                            //unmarked day
+                            downDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
                         }
                     }
                     else{
-                        Click now = monthClicks.get(i);
-                        if (now.getType() == 1) {
-                            //we only have ups
-                            upDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                        //equal day
+                        if (click.getTotalUnmarked() != 0) {
+                            //with data
+                            if (click.getTotalMarked() != 0) {
+                                //marked day
+                                equalMarkedDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
+                            } else {
+                                //unmarked day
+                                equalDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
+                            }
                         } else {
-                            //we only have ups
-                            downDecorators.add(CalendarDay.from(new Date(now.getTimestamp() * 1000)));
+                            //with no data
+                            if (click.getTotalMarked() != 0) {
+                                //marked day
+                                emptyMarkedDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
+                            } else {
+                                //unmarked day
+                                emptyDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
+                            }
                         }
                     }
                 }
@@ -119,7 +125,16 @@ public class MonthActivity extends AppCompatActivity {
         }, new Runnable() {
             @Override
             public void run() {
-                materialCalendarView = (MaterialCalendarView) findViewById(R.id.calendarView);
+                materialCalendarView.invalidateDecorators();
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.up_day, upDecorators));
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.up_marked_day, upMarkedDecorators));
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.down_day, downDecorators));
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.down_marked_day, downMarkedDecorators));
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.equal_day, equalDecorators));
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.equal_day_marked, equalMarkedDecorators));
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.empty_day, emptyDecorators));
+                materialCalendarView.addDecorator(new EventDecorator(R.drawable.empty_marked_day, emptyMarkedDecorators));
+
                 materialCalendarView.setSelectedDate(Calendar.getInstance());
                 materialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
                     @Override
@@ -139,15 +154,6 @@ public class MonthActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-                try{
-                    materialCalendarView.addDecorator(new EventDecorator(R.drawable.up_day_selector, upDecorators));
-                    materialCalendarView.addDecorator(new EventDecorator(R.drawable.down_day_selector, downDecorators));
-                    materialCalendarView.addDecorator(new EventDecorator(R.drawable.equal_day_selector, equalDecorators));
-                }
-                catch (IndexOutOfBoundsException e){
-                    e.printStackTrace();
-                }
             }
         });
     }
@@ -160,12 +166,12 @@ public class MonthActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        switch (id) {
+        switch (item.getItemId()) {
+            case R.id.hourly:
+                startActivity(new Intent(MonthActivity.this, HourlyActivity.class));
+                break;
             case R.id.week_view:
                 startActivity(new Intent(MonthActivity.this, WeekActivity.class));
-                finish();
                 break;
         }
 
@@ -181,6 +187,7 @@ public class MonthActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        setView();
         analytics_timestamp = Utils.getTimestamp();
     }
 
@@ -206,8 +213,9 @@ public class MonthActivity extends AppCompatActivity {
         @Override
         public void decorate(DayViewFacade view) {
             view.addSpan(new ForegroundColorSpan(Color.WHITE));
-            if (ContextCompat.getDrawable(getApplicationContext(), drawable) != null)
+            if (ContextCompat.getDrawable(getApplicationContext(), drawable) != null) {
                 view.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), drawable));
+            }
         }
     }
 }

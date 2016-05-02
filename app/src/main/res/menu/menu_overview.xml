@@ -4,24 +4,30 @@
     tools:context="com.adriangradinar.shapes.OverviewActivity">
 
     <item
-        android:id="@+id/refresh"
-        android:title="Refresh"
+        android:id="@+id/month_view"
+        android:icon="@drawable/calendar_icon_settings_white"
         android:orderInCategory="100"
-        android:icon="@drawable/refresh_icon"
-        app:showAsAction="always" />
+        android:title="@string/menu_month"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/week_view"
-        android:title="7 Days"
-        android:orderInCategory="100"
         android:icon="@drawable/calendar_icon_week_white"
-        app:showAsAction="always" />
+        android:orderInCategory="100"
+        android:title="@string/menu_week"
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/month_view"
-        android:title="Select Date"
+        android:id="@+id/hourly"
+        android:icon="@drawable/graph_analysis"
         android:orderInCategory="100"
-        android:icon="@drawable/calendar_icon_settings_white"
-        app:showAsAction="always" />
+        android:title="@string/menu_hourly"
+        app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/refresh_icon"
+        android:orderInCategory="100"
+        android:title="@string/menu_refresh"
+        app:showAsAction="ifRoom" />
 </menu>

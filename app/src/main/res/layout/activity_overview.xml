@@ -245,10 +245,10 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/sept_15"
+            android:text="@string/name_of_day"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
-            android:textSize="20sp" />
+            android:textSize="19sp" />
 
         <TextView
             android:id="@+id/tv_mad_day"
@@ -259,10 +259,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_mad_month"
             android:gravity="center|center_horizontal"
-            android:text="@string/x_number"
+            android:text="@string/date"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42sp" />
+            android:textSize="26sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -282,10 +282,10 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/x_number"
+            android:text="@string/name_of_day"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
-            android:textSize="20sp" />
+            android:textSize="19sp" />
 
         <TextView
             android:id="@+id/tv_lad_day"
@@ -296,10 +296,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_lad_month"
             android:gravity="center|center_horizontal"
-            android:text="@string/x_number"
+            android:text="@string/date"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42sp" />
+            android:textSize="26sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -319,10 +319,10 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/x_number"
+            android:text="@string/name_of_day"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
-            android:textSize="20sp" />
+            android:textSize="19sp" />
 
         <TextView
             android:id="@+id/tv_hd_day"
@@ -333,10 +333,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_hd_month"
             android:gravity="center|center_horizontal"
-            android:text="@string/x_number"
+            android:text="@string/date"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42sp" />
+            android:textSize="26sp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -356,10 +356,10 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/x_number"
+            android:text="@string/name_of_day"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/White"
-            android:textSize="20sp" />
+            android:textSize="19sp" />
 
         <TextView
             android:id="@+id/tv_sd_day"
@@ -370,10 +370,10 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tv_sd_month"
             android:gravity="center|center_horizontal"
-            android:text="@string/x_number"
+            android:text="@string/date"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/dark_brown"
-            android:textSize="42sp" />
+            android:textSize="26sp" />
     </RelativeLayout>
 
     <TextView

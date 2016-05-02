@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/month_view"
+        android:icon="@drawable/calendar_icon_settings_white"
+        android:orderInCategory="100"
+        android:title="@string/menu_month"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/week_view"
         android:icon="@drawable/calendar_icon_week_white"
         android:orderInCategory="100"
         android:title="@string/menu_week"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/hourly"
-        android:icon="@drawable/graph_analysis"
-        android:orderInCategory="100"
-        android:title="@string/menu_hourly"
         app:showAsAction="ifRoom" />
 
 </menu>

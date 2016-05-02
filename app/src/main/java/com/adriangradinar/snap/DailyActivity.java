@@ -13,8 +13,6 @@ import com.adriangradinar.snap.classes.Click;
 import com.adriangradinar.snap.classes.TypefaceSpan;
 import com.adriangradinar.snap.utils.DatabaseHandler;
 import com.adriangradinar.snap.utils.Utils;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,11 +36,8 @@ public class DailyActivity extends AppCompatActivity {
 
     private int upsCount = 0;
     private int downsCount = 0;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+
+    private TextView upsTV, downsTV, totalTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +61,22 @@ public class DailyActivity extends AppCompatActivity {
         for (Click click : all) {
             if (click.getTotalClicks() == 1) {
                 ups.add(click);
-                upsCount++;
+                if (click.getMarked() == 0)
+                    upsCount++;
             } else {
                 downs.add(click);
-                downsCount++;
+                if (click.getMarked() == 0)
+                    downsCount++;
             }
         }
         int totalCount = upsCount + downsCount;
 
-        clickAdapter = new ClickAdapter(activity, all);
+        //setup the textViews
+        upsTV = ((TextView) findViewById(R.id.ups_tv));
+        downsTV = ((TextView) findViewById(R.id.downs_tv));
+        totalTV = ((TextView) findViewById(R.id.all_tv));
+
+        clickAdapter = new ClickAdapter(activity, all, upsTV, downsTV, totalTV);
         assert listview != null;
         listview.setAdapter(clickAdapter);
 
@@ -82,106 +84,39 @@ public class DailyActivity extends AppCompatActivity {
         Utils.setActionBarTextAndFont(getSupportActionBar(), new SimpleDateFormat("EE dd.MM.yyyy", Locale.getDefault()), new Date(b.getLong("timestamp") * 1000), new TypefaceSpan(getApplicationContext(), "BebasNeue Bold.ttf"));
 
         //set the values and the listeners
-        TextView upsTV = ((TextView) findViewById(R.id.ups_tv));
         assert upsTV != null;
         upsTV.setText(String.valueOf(upsCount));
         upsTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickAdapter.notifyDataSetInvalidated();
-                clickAdapter = new ClickAdapter(activity, ups);
+                clickAdapter = new ClickAdapter(activity, ups, upsTV, downsTV, totalTV);
                 listview.setAdapter(clickAdapter);
             }
         });
 
-        final TextView downsTV = ((TextView) findViewById(R.id.downs_tv));
         assert downsTV != null;
         downsTV.setText(String.valueOf(downsCount));
         downsTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickAdapter.notifyDataSetInvalidated();
-                clickAdapter = new ClickAdapter(activity, downs);
+                clickAdapter = new ClickAdapter(activity, downs, upsTV, downsTV, totalTV);
                 listview.setAdapter(clickAdapter);
             }
         });
 
-        TextView totalTV = ((TextView) findViewById(R.id.all_tv));
         assert totalTV != null;
         totalTV.setText(String.valueOf(totalCount));
         totalTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickAdapter.notifyDataSetInvalidated();
-                clickAdapter = new ClickAdapter(activity, all);
+                clickAdapter = new ClickAdapter(activity, all, upsTV, downsTV, totalTV);
                 listview.setAdapter(clickAdapter);
             }
         });
-
-        //set the pie chart data
-//        setWeekView(b.getInt("ups"), b.getInt("downs"));
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
-    //    private void setWeekView(int ups, int downs){
-//        PieChart pieChart = (PieChart) findViewById(R.id.day_pie_chart);
-//        pieChart.setDescription("");
-//        pieChart.getLegend().setEnabled(false);
-//        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-//            @Override
-//            public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-//                Log.e(TAG, e.toString());
-//            }
-//
-//            @Override
-//            public void onNothingSelected() {}
-//        });
-////        mChart.getLegend().setPosition(Legend.LegendPosition.LEFT_OF_CHART);
-////        mChart.setUsePercentValues(true);
-//
-//        //?!?
-//        pieChart.setHoleRadius(44f);
-//        pieChart.setTransparentCircleRadius(50f);
-////        mChart.setRotationAngle(0);
-//
-//
-//        //add some data
-//        ArrayList<Entry> yVals = new ArrayList<>();
-//        yVals.add(new Entry(ups, 0));
-//        yVals.add(new Entry(downs, 1));
-//
-//        //and some colours
-//        ArrayList<Integer> colors = new ArrayList<>();
-//        colors.add(ContextCompat.getColor(getApplicationContext(), R.color.up_primary));
-//        colors.add(ContextCompat.getColor(getApplicationContext(), R.color.down_primary));
-//
-//        //and some labels
-//        ArrayList<String> xVals = new ArrayList<>();
-//        xVals.add("Ups");
-//        xVals.add("Downs");
-//
-//        //set the data
-//        PieDataSet pieDataSet = new PieDataSet(yVals, "");
-//        pieDataSet.setSliceSpace(3);
-//        pieDataSet.setColors(colors);
-//
-//        PieData pieData = new PieData(xVals, pieDataSet);
-//        pieData.setValueFormatter(new MyValueFormatter());
-////        pieData.setDrawValues(false);
-//        pieData.setValueTextSize(14f);
-//        pieData.setValueTextColor(Color.WHITE);
-//
-//        pieChart.setData(pieData);
-//
-//        // undo all highlights
-//        pieChart.highlightValues(null);
-//
-//        // update pie chart
-//        pieChart.invalidate();
-//    }
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -203,40 +138,10 @@ public class DailyActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-//        Action viewAction = Action.newAction(
-//                Action.TYPE_VIEW, // TODO: choose an action type.
-//                "Daily Page", // TODO: Define a title for the content shown.
-//                // TODO: If you have web page content that matches this app activity's content,
-//                // make sure this auto-generated web page URL is correct.
-//                // Otherwise, set the URL to null.
-//                Uri.parse("http://host/path"),
-//                // TODO: Make sure this auto-generated app URL is correct.
-//                Uri.parse("android-app://com.adriangradinar.snap/http/host/path")
-//        );
-//        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        Action viewAction = Action.newAction(
-//                Action.TYPE_VIEW, // TODO: choose an action type.
-//                "Daily Page", // TODO: Define a title for the content shown.
-//                // TODO: If you have web page content that matches this app activity's content,
-//                // make sure this auto-generated web page URL is correct.
-//                // Otherwise, set the URL to null.
-//                Uri.parse("http://host/path"),
-//                // TODO: Make sure this auto-generated app URL is correct.
-//                Uri.parse("android-app://com.adriangradinar.snap/http/host/path")
-//        );
-//        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
     }
 }

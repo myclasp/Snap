@@ -44,7 +44,7 @@ public class MainActivity extends ActivityManagePermission {
 
                 geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
-                Toast.makeText(getApplicationContext(), "Please wait while we convert your locations into addresses. Thank you!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Please wait while we convert your locations into meaningful addresses. Thank you!", Toast.LENGTH_LONG).show();
                 spinner.setVisibility(View.VISIBLE);
                 button.setVisibility(View.INVISIBLE);
 
@@ -99,13 +99,19 @@ public class MainActivity extends ActivityManagePermission {
         assert button != null;
         button.setOnClickListener(buttonListener);
 
+//        if(Utils.getTimestamp() < 1461599420)
+//            button.setVisibility(View.INVISIBLE);
+
         TextView snapTV = (TextView) findViewById(R.id.snapTV);
         assert snapTV != null;
         snapTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                db.readCSV(getApplicationContext(), R.raw.stats);
-//                startActivity(new Intent(MainActivity.this, DeepAnalysisActivity.class));
+//                db.readCSV(getApplicationContext(), R.raw.stats_4);
+//                db.deleteDuplicates();
+//                db.logClicks();
+
+//                startActivity(new Intent(MainActivity.this, HourlyActivity.class));
 //                db.getCurrentMonth();
             }
         });
@@ -123,6 +129,7 @@ public class MainActivity extends ActivityManagePermission {
                     public void run() {
                         db.downloadClicks(fullPath);
                         db.downloadAnalytics(fullPath);
+                        db.downloadMarkedAnalytics(fullPath);
                     }
                 }, new Runnable() {
                     @Override
@@ -136,23 +143,6 @@ public class MainActivity extends ActivityManagePermission {
             }
         });
     }
-
-//    View.OnClickListener buttonListenerLocation = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            askCompactPermissions(new String[]{PermissionUtils.Manifest_ACCESS_FINE_LOCATION, PermissionUtils.Manifest_WRITE_EXTERNAL_STORAGE}, new PermissionResult() {
-//                @Override
-//                public void permissionGranted() {
-//                    startService(new Intent(MainActivity.this, LocationService.class).putExtra(LocationService.CLICK, LocationService.UP_CLICK));
-//                }
-//
-//                @Override
-//                public void permissionNotGranted() {
-//                    Log.e(TAG, "no permissions given");
-//                }
-//            });
-//        }
-//    };
 
     private void convertAddresses() {
         int total = db.countTotalLocationsWithoutAnAddress();

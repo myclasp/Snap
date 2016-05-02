@@ -29,26 +29,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHandler.class.getSimpleName();
 
     //database version
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 8;
     //database name
     private static final String DATABASE_NAME = "snapino_database";
 
     //declaring the variable names for the table of transaction
     private static final String TBL_CLICKS = "tbl_clicks";
     private static final String ID = "click_id";
-    private static final String NUMBER = "click_total";
+    private static final String NUMBER = "click_total"; //1 or 2
     private static final String LAT = "click_latitude";
     private static final String LON = "click_longitude";
     private static final String ACC = "click_accuracy";
     private static final String ADDRESS = "click_address";
     private static final String TIMESTAMP = "click_timestamp";
+    private static final String MARKED = "marked_for_deletion"; // 0 or 1
 
     private static final String TBL_ACTIVITY_ANALYTICS = "tbl_activity_analytics";
     private static final String ACTIVITY_NAME = "activity_name";
     private static final String START_TIMESTAMP = "start_timestamp"; //the start of the interaction
     private static final String DURATION = "duration"; //the duration of the interaction
 
-//    private static final String TBL_DELETED = "tbl_deleted";
+    private static final String TBL_MARKED_ANALYTICS = "tbl_marked_analytics";
+    private static final String ID_MARKED = "marked_id";
 
     private static DatabaseHandler instance;
 
@@ -68,10 +70,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_LOCATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_CLICKS + "("
                 + ID + " INTEGER PRIMARY KEY, " + NUMBER + " INTEGER, "
                 + LAT + " TEXT, " + LON + " TEXT, " + ACC + " REAL, "
-                + ADDRESS + " TEXT, " + TIMESTAMP + " TEXT" + ")";
+                + ADDRESS + " TEXT, " + TIMESTAMP + " TEXT, "
+                + MARKED + " INTEGER DEFAULT 0" + ")";
+
+        String CREATE_ACTIVITY_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_ACTIVITY_ANALYTICS + "("
+                + ID + " INTEGER PRIMARY KEY, " + ACTIVITY_NAME + " TEXT, "
+                + START_TIMESTAMP + " TEXT, " + DURATION + " INTEGER" + ")";
+
+        String CREATE_MARKED_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_MARKED_ANALYTICS + "("
+                + ID_MARKED + " INTEGER PRIMARY KEY, " + ID + " INTEGER, " + MARKED + " INTEGER, "
+                + TIMESTAMP + " TEXT)";
 
         db.setLocale(Locale.UK);
         db.execSQL(CREATE_LOCATIONS_TABLE);
+        db.execSQL(CREATE_ACTIVITY_ANALYTICS_TABLE);
+        db.execSQL(CREATE_MARKED_ANALYTICS_TABLE);
         db.execSQL("CREATE INDEX DATE ON " + TBL_CLICKS + " ("+TIMESTAMP+")");
     }
 
@@ -83,14 +96,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        Log.e(TAG, ""+oldVersion + " - " + newVersion);
+        String CREATE_MARKED_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_MARKED_ANALYTICS + "("
+                + ID_MARKED + " INTEGER PRIMARY KEY, " + ID + " INTEGER, " + MARKED + " INTEGER, "
+                + TIMESTAMP + " TEXT)";
 
-//        db.execSQL("DROP TABLE IF EXISTS " + TBL_ACTIVITY_ANALYTICS);
-        String CREATE_ACTIVITY_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_ACTIVITY_ANALYTICS + "("
-                + ID + " INTEGER PRIMARY KEY, " + ACTIVITY_NAME + " TEXT, "
-                + START_TIMESTAMP + " TEXT, " + DURATION + " INTEGER" + ")";
-        db.setLocale(Locale.UK);
-        db.execSQL(CREATE_ACTIVITY_ANALYTICS_TABLE);
+        if (newVersion == 8) {
+            //and add a new table
+            db.execSQL(CREATE_MARKED_ANALYTICS_TABLE);
+
+            if (oldVersion <= 6) {
+                //add the extra column
+                db.execSQL("ALTER TABLE " + TBL_CLICKS + " ADD COLUMN " + MARKED + " INTEGER DEFAULT 0");
+            }
+        }
     }
 
     public void addClick(Click click) {
@@ -167,9 +185,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public String[] getMostUpDay(){
-        String[] values = new String[5];
+        String[] values = new String[6];
         try{
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.results, t.timestamp FROM (SELECT "+TIMESTAMP+" AS timestamp, COUNT("+ID+") AS results FROM " + TBL_CLICKS + " WHERE " + NUMBER + " = 1 GROUP BY date("+TIMESTAMP+", 'unixepoch', 'localtime') ORDER BY results DESC LIMIT 1) AS t";
+            String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' and " + NUMBER + " = '1' THEN 1 ELSE 0 END) up_unmarked_count, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' and " + NUMBER + " = '1' THEN 1 ELSE 0 END) up_marked_count, " + TIMESTAMP +
+                    " FROM " + TBL_CLICKS + " GROUP BY DATE(click_date) ORDER BY up_unmarked_count DESC, click_date DESC LIMIT 1";
 
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
@@ -177,13 +201,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-//                        values[0] = cursor.getString(0).substring(2); //year
-//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
-                        values[0] = cursor.getString(0); //year
+                        values[0] = (cursor.getString(0)).substring(2, 4); //year
                         values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
-                        values[3] = cursor.getString(3); //clicks
-                        values[4] = cursor.getString(4); //timestamp
+
+                        //the clicks count
+                        values[3] = cursor.getString(7); //total_unmarked
+                        values[4] = cursor.getString(9); //timestamp
+                        values[5] = cursor.getString(8); //up_marked_clicks
+
+                        //Log.e(TAG, cursor.getString(0) + " - " + cursor.getString(1) + " - " + cursor.getString(2) + " - " + cursor.getString(3) + " - " + cursor.getInt(5));
                     }
                     while (cursor.moveToNext());
                 }
@@ -199,9 +226,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public String[] getMostDownDay(){
-        String[] values = new String[5];
+        String[] values = new String[6];
         try{
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.results, t.timestamp FROM (SELECT "+TIMESTAMP+" AS timestamp, COUNT("+ID+") AS results FROM " + TBL_CLICKS + " WHERE " + NUMBER + " = 2 GROUP BY date("+TIMESTAMP+", 'unixepoch', 'localtime') ORDER BY results DESC LIMIT 1) AS t";
+            String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' and " + NUMBER + " = '2' THEN 1 ELSE 0 END) down_unmarked_count, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' and " + NUMBER + " = '2' THEN 1 ELSE 0 END) down_marked_count, " + TIMESTAMP +
+                    " FROM " + TBL_CLICKS + " GROUP BY DATE(click_date) ORDER BY down_unmarked_count DESC, click_date DESC LIMIT 1";
 
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
@@ -209,13 +242,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-//                        values[0] = cursor.getString(0).substring(2); //year
-//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
-                        values[0] = cursor.getString(0); //year
+                        values[0] = (cursor.getString(0)).substring(2, 4); //year
                         values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
-                        values[3] = cursor.getString(3); //clicks
-                        values[4] = cursor.getString(4); //timestamp
+
+                        //the clicks count
+                        values[3] = cursor.getString(7); //total_unmarked
+                        values[4] = cursor.getString(9); //timestamp
+                        values[5] = cursor.getString(8); //down_marked_clicks
                     }
                     while (cursor.moveToNext());
                 }
@@ -231,9 +265,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public String[] getMostActiveDay(){
-        String[] values = new String[5];
+        String[] values = new String[6];
         try{
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.results, t.timestamp FROM (SELECT "+TIMESTAMP+" AS timestamp, COUNT("+ID+") AS results FROM " + TBL_CLICKS + " GROUP BY date("+TIMESTAMP+", 'unixepoch', 'localtime') ORDER BY results DESC LIMIT 1) AS t";
+            String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " + TIMESTAMP +
+                    " FROM " + TBL_CLICKS + " GROUP BY DATE(click_date) ORDER BY total_unmarked DESC, click_date DESC LIMIT 1";
 
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
@@ -241,13 +279,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-//                        values[0] = cursor.getString(0).substring(2); //year
-//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
-                        values[0] = cursor.getString(0); //year
+                        values[0] = (cursor.getString(0)).substring(2, 4); //year
                         values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
-                        values[3] = cursor.getString(3); //clicks
-                        values[4] = cursor.getString(4); //timestamp
+
+                        //the clicks count
+                        values[3] = cursor.getString(5); //total_unmarked
+                        values[4] = cursor.getString(7); //timestamp
+                        values[5] = cursor.getString(6); //total_marked
                     }
                     while (cursor.moveToNext());
                 }
@@ -263,9 +302,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public String[] getLeastActiveDay(){
-        String[] values = new String[5];
+        String[] values = new String[6];
         try{
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.results, t.timestamp FROM (SELECT "+TIMESTAMP+" AS timestamp, COUNT("+ID+") AS results FROM " + TBL_CLICKS + " GROUP BY date("+TIMESTAMP+", 'unixepoch', 'localtime') ORDER BY results ASC LIMIT 1) AS t";
+            String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " + TIMESTAMP +
+                    " FROM " + TBL_CLICKS + " GROUP BY DATE(click_date) ORDER BY total_unmarked ASC, click_date DESC LIMIT 1";
 
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
@@ -273,13 +316,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-//                        values[0] = cursor.getString(0).substring(2); //year
-                        values[0] = cursor.getString(0); //year
-//                        values[1] = Utils.convertIntToMonth(cursor.getInt(1)); //month
+                        values[0] = (cursor.getString(0)).substring(2, 4); //year
                         values[1] = cursor.getString(1); //month
                         values[2] = cursor.getString(2); //day
-                        values[3] = cursor.getString(3); //clicks
-                        values[4] = cursor.getString(4); //timestamp
+
+                        //the clicks count
+                        values[3] = cursor.getString(5); //total_unmarked
+                        values[4] = cursor.getString(7); //timestamp
+                        values[5] = cursor.getString(6); //total_marked
                     }
                     while (cursor.moveToNext());
                 }
@@ -297,15 +341,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<Click> selectLast7Days(){ //this does not include the current day's data
         ArrayList<Click> allClicks = new ArrayList<>();
         try{
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action, t.clicks, t.timestamp FROM (SELECT " + TIMESTAMP + " as timestamp, " + NUMBER + " AS action, COUNT(" + NUMBER + ") AS clicks FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') BETWEEN date('now', '-7 days', 'localtime') AND date('now', '-1 day', 'localtime') GROUP BY " + NUMBER + ", date(" + TIMESTAMP + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + " ASC) AS t ORDER BY year, month, day, action";
+//            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action, t.clicks, t.timestamp FROM (SELECT " + TIMESTAMP + " as timestamp, " + NUMBER + " AS action, COUNT(" + NUMBER + ") AS clicks FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') BETWEEN date('now', '-7 days', 'localtime') AND date('now', '-1 day', 'localtime') GROUP BY " + NUMBER + ", date(" + TIMESTAMP + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + " ASC) AS t ORDER BY year, month, day, action";
+
+            String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '1' THEN 1 ELSE 0 END) total_up_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '2' THEN 1 ELSE 0 END) total_down_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " + TIMESTAMP + " " +
+                    "FROM tbl_clicks WHERE " +
+                    "date(" + TIMESTAMP + ", 'unixepoch', 'localtime') BETWEEN date('now', '-7 days', 'localtime') AND date('now', '-1 day', 'localtime') " +
+                    "GROUP BY DATE(click_date) ORDER BY click_date ASC";
+
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
 
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        allClicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-//                        Log.e(TAG, cursor.getString(0) + " - " + cursor.getString(1) + " - " + cursor.getString(2) + " - " + cursor.getInt(3) + " - " + cursor.getInt(4) + " - " + cursor.getInt(5));
+                        allClicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(5), cursor.getInt(6), cursor.getInt(7), cursor.getLong(8)));
+//                        Log.e(TAG, cursor.getString(0)+" - "+cursor.getString(1)+" - "+cursor.getString(2)+" - "+cursor.getInt(5)+" - "+cursor.getInt(6)+" - "+cursor.getInt(7)+" - "+cursor.getLong(8));
                     }
                     while (cursor.moveToNext());
                 }
@@ -320,50 +374,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return allClicks;
     }
 
-    /**
-     * Function which searches and fetches all the results for the current months
-     * @return An ArrayList of ups and downs
-     */
-    public ArrayList<Click> getCurrentMonth_old() { //this does not include the current day's data
-        ArrayList<Click> clicks = new ArrayList<>();
-
-        try{
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action, t.clicks, t.timestamp FROM (SELECT "+TIMESTAMP+" as timestamp, "+NUMBER+" AS action, COUNT("+NUMBER+") AS clicks FROM "+TBL_CLICKS+" WHERE date("+TIMESTAMP+", 'unixepoch', 'localtime') BETWEEN date('now', 'start of month', 'localtime') AND date('now', 'start of day', 'localtime') GROUP BY "+NUMBER+", date("+TIMESTAMP+", 'unixepoch', 'localtime') ORDER BY "+TIMESTAMP+" ASC) AS t";
-            SQLiteDatabase db = this.getWritableDatabase();
-            Cursor cursor = db.rawQuery(sql, null);
-
-            try {
-                if (cursor.moveToFirst()) {
-                    do {
-//                        clicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-                        Log.e("db", cursor.getString(0) + " " + cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getInt(3) + " " + cursor.getInt(4) + " " + cursor.getInt(5));
-                    }
-                    while (cursor.moveToNext());
-                }
-            } finally {
-                if (cursor != null)
-                    cursor.close();
-            }
-        }
-        catch (SQLiteDatabaseLockedException e){
-            e.printStackTrace();
-        }
-
-        return clicks;
-    }
-
     public ArrayList<Click> getCurrentMonth() { //this does not include the current day's data
         ArrayList<Click> clicks = new ArrayList<>();
         try {
-            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action AS actions, t.clicks AS clicks, t.timestamp AS timestamp FROM (SELECT " + TIMESTAMP + " as timestamp, " + NUMBER + " AS action, COUNT(" + NUMBER + ") AS clicks FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') BETWEEN date('now', 'start of month', 'localtime') AND date('now', 'start of day', '+1 day', 'localtime') GROUP BY " + NUMBER + ", date(" + TIMESTAMP + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + " ASC) AS t ORDER BY day, actions";
+            String sql = "SELECT t.year, t.month, t.day," +
+                    "CASE WHEN t.total_up_unmarked > t.total_down_unmarked THEN 1 ELSE 0 END up_day, " +
+                    "CASE WHEN t.total_up_unmarked < t.total_down_unmarked THEN 1 ELSE 0 END down_day, " +
+                    "CASE WHEN t.total_up_unmarked = t.total_down_unmarked THEN 1 ELSE 0 END equal_day, t.total_unmarked, t.total_marked, t.click_timestamp " +
+                    "FROM (SELECT strftime('%Y', date(click_timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(click_timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(click_timestamp, 'unixepoch', 'localtime')) AS day, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '1' THEN 1 ELSE 0 END) total_up_unmarked, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '2' THEN 1 ELSE 0 END) total_down_unmarked, " + TIMESTAMP +
+                    " FROM tbl_clicks GROUP BY DATE(click_date) ORDER BY click_date ASC) AS t";
+
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
 
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        clicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-//                        Log.e("db", cursor.getString(0)+" "+cursor.getString(1)+" "+cursor.getString(2)+" "+cursor.getInt(3)+" "+cursor.getInt(4)+" "+cursor.getInt(5));
+//                        Log.e(TAG, cursor.getString(0)+" "+cursor.getString(1)+" "+cursor.getString(2)+" "+cursor.getInt(3)+" "+cursor.getInt(4)+" "+cursor.getInt(5)+" "+cursor.getInt(6)+" "+cursor.getInt(7) +" " + cursor.getLong(8));
+                        clicks.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5), cursor.getInt(6), cursor.getInt(7), cursor.getLong(8)));
                     }
                     while (cursor.moveToNext());
                 }
@@ -378,33 +411,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<Click> getDayBasedOnTimestamp(long timestamp){
-//        ArrayList<Click> ups = new ArrayList<>();
-//        ArrayList<Click> downs = new ArrayList<>();
 
         ArrayList<Click> values = new ArrayList<>();
 
         try{
-            String sql = "SELECT t.id, t.action, t.lat, t.lon, t.acc, t.address, t.timestamp, strftime('%H', datetime(t.timestamp, 'unixepoch', 'localtime')) AS hour, strftime('%M', datetime(t.timestamp, 'unixepoch', 'localtime')) AS minute, strftime('%S', datetime(t.timestamp, 'unixepoch', 'localtime')) AS second FROM (SELECT " + ID + " AS id, " + NUMBER + " AS action, " + LAT + " AS lat, " + LON + " AS lon, " + ACC + " AS acc, " + ADDRESS + " AS address, " + TIMESTAMP + " as timestamp FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') == date(" + timestamp + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + ") as t";
+            String sql = "SELECT t.id, t.action, t.lat, t.lon, t.acc, t.address, t.timestamp, strftime('%H', datetime(t.timestamp, 'unixepoch', 'localtime')) AS hour, strftime('%M', datetime(t.timestamp, 'unixepoch', 'localtime')) AS minute, strftime('%S', datetime(t.timestamp, 'unixepoch', 'localtime')) AS second, t.marked FROM (SELECT " + TIMESTAMP + " as timestamp, " + ID + " AS id, " + NUMBER + " AS action, " + LAT + " AS lat, " + LON + " AS lon, " + ACC + " AS acc, " + ADDRESS + " AS address, " + MARKED + " AS marked FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') == date(" + timestamp + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + ") as t";
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
 
             try {
                 if (cursor.moveToFirst()) {
                     do {
-//                        if(cursor.getInt(3) == 1){
-//                            ups.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-//                        }
-//                        else{
-//                            downs.add(new Click(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5)));
-//                        }
-//                        Log.e("db", cursor.getString(0)+" "+cursor.getString(1)+" "+cursor.getString(2)+" "+cursor.getInt(3)+" "+cursor.getInt(4)+" "+cursor.getInt(5));
-                        values.add(new Click(cursor.getInt(0), cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getDouble(4), cursor.getString(5), cursor.getLong(6), cursor.getString(7), cursor.getString(8), cursor.getString(9)));
-                        //int id, int totalClicks, double latitude, double longitude, double accuracy, long timestamp, String hour, String minute, String second
-//                        Log.e("db", cursor.getInt(0) + " " + cursor.getString(1)+":"+cursor.getString(2)+" "+cursor.getInt(3) + " " + cursor.getString(4));
+//                        Log.e("db", cursor.getInt(0) + " " + cursor.getInt(1) + " " + cursor.getDouble(2) + " " + cursor.getDouble(3) + " " + cursor.getDouble(4) + " " + cursor.getString(5) + " " + cursor.getLong(6) + " " + cursor.getString(7) + " " + cursor.getString(8) + " " + cursor.getString(9) + " " + cursor.getInt(10));
+                        values.add(new Click(cursor.getInt(0), cursor.getInt(1), cursor.getDouble(2), cursor.getDouble(3), cursor.getDouble(4), cursor.getString(5), cursor.getLong(6), cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getInt(10)));
                     }
                     while (cursor.moveToNext());
                 }
-//                ups.addAll(downs);
             } finally {
                 if (cursor != null)
                     cursor.close();
@@ -422,7 +444,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int countEventsInDayBasedOnTimestamp(long timestamp){
         int total = 0;
         try{
-            String sql = "SELECT COUNT("+ID+") AS total, "+TIMESTAMP+" as timestamp FROM "+TBL_CLICKS+" WHERE date("+TIMESTAMP+", 'unixepoch', 'localtime') == date("+timestamp+", 'unixepoch', 'localtime')";
+            String sql = "SELECT COUNT(" + TIMESTAMP + ") AS total, " + TIMESTAMP + " as timestamp FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') == date(" + timestamp + ", 'unixepoch', 'localtime')";
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
             try {
@@ -444,35 +466,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-
-
-
-
-
-
-
-    public ArrayList[] getTotalEventsPerHour(){
-        ArrayList[] list = new ArrayList[2];
-        ArrayList<Click> ups = new ArrayList<>();
-        ArrayList<Click> downs = new ArrayList<>();
+    public ArrayList<Click> getTotalEventsPerHour() {
+        ArrayList<Click> clicks = new ArrayList<>();
         try{
-            String sql = "SELECT strftime('%H', datetime(t.timestamp, 'unixepoch', 'localtime')) AS hour, t.click, t.clicks FROM (SELECT "+TIMESTAMP+" AS timestamp, "+NUMBER+" AS click, COUNT("+NUMBER+") AS clicks FROM "+TBL_CLICKS+" GROUP BY "+NUMBER+", strftime('%H', datetime("+TIMESTAMP+", 'unixepoch', 'localtime')) ORDER BY "+TIMESTAMP+" ASC) as t ORDER BY hour, t.click";
+            String sql = "SELECT strftime('%H', datetime(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS hour, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '1' THEN 1 ELSE 0 END) up_count, " +
+                    "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '2' THEN 1 ELSE 0 END) down_count, " +
+                    "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " +
+                    "COUNT(" + NUMBER + ") AS total_clicks, " + TIMESTAMP + " AS timestamp " +
+                    "FROM " + TBL_CLICKS + " GROUP BY hour ORDER BY hour";
+
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(sql, null);
 
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        //hour, click, clicks
-                        if(cursor.getInt(1) == 1){
-                            //up click
-                            ups.add(new Click(cursor.getString(0), cursor.getInt(1), cursor.getInt(2)));
-                        }
-                        else{
-                            //down click
-                            downs.add(new Click(cursor.getString(0), cursor.getInt(1), cursor.getInt(2)));
-                        }
-                        Log.e("db", cursor.getString(0)+" "+cursor.getInt(1)+" "+cursor.getInt(2));
+                        clicks.add(new Click(cursor.getString(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getLong(5)));
+//                        Log.e(TAG, cursor.getString(0)+" - "+cursor.getInt(1)+" - "+cursor.getInt(2)+" - "+cursor.getInt(3)+" - "+cursor.getInt(4)+" - "+cursor.getLong(5));
                     }
                     while (cursor.moveToNext());
                 }
@@ -484,11 +495,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         catch (SQLiteDatabaseLockedException e){
             e.printStackTrace();
         }
-
-        list[0] = ups;
-        list[1] = downs;
-
-        return list;
+        return clicks;
     }
 
     public ArrayList<Click> getClicksWithoutAddress(int limit) {
@@ -546,7 +553,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             try {
                 if (cursor.moveToFirst()) {
                     do {
-                        Log.e("db", cursor.getInt(0) + " - " + cursor.getInt(1) + " - " + cursor.getDouble(2) + " - " + cursor.getDouble(3) + " - " + cursor.getString(4) + " - " + new Date(cursor.getLong(5) * 1000));
+                        Log.e("db", cursor.getInt(0) + " - " + cursor.getInt(1) + " - " + cursor.getDouble(2) + " - " + cursor.getDouble(3) + " - " + cursor.getString(4) + " - " + new Date(cursor.getLong(6) * 1000) + " - " + cursor.getInt(7));
                     }
                     while (cursor.moveToNext());
                 }
@@ -613,7 +620,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "Database download completed!");
+        Log.d(TAG, "Clicks download completed!");
     }
 
     public void downloadAnalytics(String fullPath) {
@@ -669,10 +676,67 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "Database download completed!");
+        Log.d(TAG, "Activity analytics download completed!");
+    }
+
+    public void downloadMarkedAnalytics(String fullPath) {
+        try {
+            File dir = new File(fullPath);
+
+            boolean isDirectoryCreated = dir.exists();
+            if (!isDirectoryCreated) {
+                isDirectoryCreated = dir.mkdir();
+            }
+
+            if (isDirectoryCreated) {
+                File myFile = new File(fullPath, "marked_analytics_" + Utils.getTimestamp() + ".txt");
+
+                boolean isFileCreated = myFile.exists();
+                if (!isFileCreated) {
+                    isFileCreated = myFile.createNewFile();
+                }
+
+                if (isFileCreated) {
+                    PrintWriter printWriter = new PrintWriter(new FileWriter(myFile));
+                    printWriter.println(TBL_MARKED_ANALYTICS + "@" + Utils.getTimestamp());
+                    printWriter.println(ID_MARKED + "," + ID + "," + MARKED + "," + TIMESTAMP);
+
+                    try {
+                        String sql = "SELECT * FROM " + TBL_MARKED_ANALYTICS + " ORDER BY " + ID_MARKED;
+                        SQLiteDatabase db = this.getWritableDatabase();
+                        Cursor cursor = db.rawQuery(sql, null);
+
+                        try {
+                            if (cursor.moveToFirst()) {
+                                do {
+                                    printWriter.println(cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getInt(2) + "," + cursor.getLong(3));
+                                }
+                                while (cursor.moveToNext());
+                            }
+                        } finally {
+                            if (cursor != null)
+                                cursor.close();
+                        }
+                    } catch (SQLiteDatabaseLockedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        printWriter.close();
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "Couldn't find the file");
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "An I/O Error occurred");
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "Marked analytics download completed!");
     }
 
     public void readCSV(Context context, int file) {
+        String address;
         deleteAllRecords();
         InputStream inputStream = context.getResources().openRawResource(file);
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -695,15 +759,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         values.put(LON, Double.parseDouble(row[3]));
                         values.put(ACC, Double.parseDouble(row[4]));
 
+                        address = "";
+
                         //the damn split on the address comma :)
-                        if (row.length == 8) {
-                            values.put(ADDRESS, row[5] + ", " + row[6]);
-                            values.put(TIMESTAMP, Long.parseLong(row[7]));
-                        } else {
+                        if (row.length == 7) {
                             values.put(ADDRESS, row[5]);
                             values.put(TIMESTAMP, Long.parseLong(row[6]));
+                        } else {
+                            int j = 5;
+                            for (; j < row.length - 2; j++) {
+                                address += row[j] + ", ";
+                            }
+                            address += row[j];
+                            values.put(ADDRESS, address);
+                            values.put(TIMESTAMP, Long.parseLong(row[j + 1]));
+                            Log.e(TAG, row.length + " " + Long.parseLong(row[j + 1]));
                         }
 
+                        //insert the values
                         db.insert(TBL_CLICKS, null, values);
                     } catch (SQLiteDatabaseLockedException e) {
                         e.printStackTrace();
@@ -744,6 +817,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
+    public void addMarkedAnalytic(int id, int marked) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            //allow the database to create the values to be insert
+            ContentValues values = new ContentValues();
+            values.put(ID, id);
+            values.put(MARKED, marked);
+            values.put(TIMESTAMP, Utils.getTimestamp());
+
+            db.insert(TBL_MARKED_ANALYTICS, null, values);
+            Log.w(TAG, "Marked into the database!");
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void logAnalytics() {
         try {
@@ -767,6 +856,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         } catch (SQLiteDatabaseLockedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setMarked(int id, int value) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(MARKED, value);
+            db.update(TBL_CLICKS, values, ID + "='" + id + "'", null);
+        } catch (SQLiteDatabaseLockedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteDuplicates() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TBL_CLICKS, ID + " NOT IN (SELECT MAX(" + ID + ") FROM " + TBL_CLICKS + " GROUP BY " + TIMESTAMP + ", " + NUMBER + ")", null);
+        db.close();
     }
 
     public void deleteAllRecords() {

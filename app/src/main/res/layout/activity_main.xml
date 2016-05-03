@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="Snapino"
+        android:text="Snapp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/clasp_colour"
         android:textSize="52sp" />

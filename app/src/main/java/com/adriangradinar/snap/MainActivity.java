@@ -40,49 +40,35 @@ public class MainActivity extends ActivityManagePermission {
     View.OnClickListener buttonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (Utils.isWifiON(getApplicationContext()) && db.countTotalLocationsWithoutAnAddress() > 0) {
+            if (db.countTotalClicks() != 0) {
+                if (Utils.isWifiON(getApplicationContext()) && db.countTotalLocationsWithoutAnAddress() > 0) {
 
-                geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                    geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
-                Toast.makeText(getApplicationContext(), "Please wait while we convert your locations into meaningful addresses. Thank you!", Toast.LENGTH_LONG).show();
-                spinner.setVisibility(View.VISIBLE);
-                button.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getApplicationContext(), "Please wait while we convert your locations into meaningful addresses. Thank you!", Toast.LENGTH_LONG).show();
+                    spinner.setVisibility(View.VISIBLE);
+                    button.setVisibility(View.INVISIBLE);
 
-                ThreadManager.runInBackgroundThenUi(new Runnable() {
-                    @Override
-                    public void run() {
-                        //this is in background
-                        convertAddresses();
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        spinner.setVisibility(View.INVISIBLE);
-                        button.setVisibility(View.VISIBLE);
-                        startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-                    }
-                });
+                    ThreadManager.runInBackgroundThenUi(new Runnable() {
+                        @Override
+                        public void run() {
+                            //this is in background
+                            convertAddresses();
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            spinner.setVisibility(View.INVISIBLE);
+                            button.setVisibility(View.VISIBLE);
+                            startActivity(new Intent(MainActivity.this, OverviewActivity.class));
+                        }
+                    });
+                } else {
+                    startActivity(new Intent(MainActivity.this, OverviewActivity.class));
+                }
             } else {
-                startActivity(new Intent(MainActivity.this, OverviewActivity.class));
+                Toast.makeText(getApplicationContext(), "Please record more clicks!", Toast.LENGTH_LONG).show();
             }
-//            if(db.countTotalClicks() == 0){
-//                //need to generate some random data
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        generateClicks(2500);
-//                        startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-//                    }
-//                }).start();
-//            }
-//            else{
-////                db.logClicks();
-////                startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-//
-//            }
-
-
-//            db.getTotalEventsPerHour();
         }
     };
 
@@ -99,7 +85,7 @@ public class MainActivity extends ActivityManagePermission {
         assert button != null;
         button.setOnClickListener(buttonListener);
 
-//        if(Utils.getTimestamp() < 1461599420)
+//        if(Utils.getTimestamp() < 1462924800)
 //            button.setVisibility(View.INVISIBLE);
 
         TextView snapTV = (TextView) findViewById(R.id.snapTV);

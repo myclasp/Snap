@@ -29,7 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHandler.class.getSimpleName();
 
     //database version
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     //database name
     private static final String DATABASE_NAME = "snapino_database";
 
@@ -52,6 +52,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TBL_MARKED_ANALYTICS = "tbl_marked_analytics";
     private static final String ID_MARKED = "marked_id";
 
+    private static final String CREATE_LOCATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_CLICKS + "("
+            + ID + " INTEGER PRIMARY KEY, " + NUMBER + " INTEGER, "
+            + LAT + " TEXT, " + LON + " TEXT, " + ACC + " REAL, "
+            + ADDRESS + " TEXT, " + TIMESTAMP + " TEXT, "
+            + MARKED + " INTEGER DEFAULT 0" + ")";
+
+    private static final String CREATE_ACTIVITY_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_ACTIVITY_ANALYTICS + "("
+            + ID + " INTEGER PRIMARY KEY, " + ACTIVITY_NAME + " TEXT, "
+            + START_TIMESTAMP + " TEXT, " + DURATION + " INTEGER" + ")";
+
+    private static final String CREATE_MARKED_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_MARKED_ANALYTICS + "("
+            + ID_MARKED + " INTEGER PRIMARY KEY, " + ID + " INTEGER, " + MARKED + " INTEGER, "
+            + TIMESTAMP + " TEXT)";
+
     private static DatabaseHandler instance;
 
     public DatabaseHandler(Context context) {
@@ -66,21 +80,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //declare and create the transaction table
-        String CREATE_LOCATIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_CLICKS + "("
-                + ID + " INTEGER PRIMARY KEY, " + NUMBER + " INTEGER, "
-                + LAT + " TEXT, " + LON + " TEXT, " + ACC + " REAL, "
-                + ADDRESS + " TEXT, " + TIMESTAMP + " TEXT, "
-                + MARKED + " INTEGER DEFAULT 0" + ")";
-
-        String CREATE_ACTIVITY_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_ACTIVITY_ANALYTICS + "("
-                + ID + " INTEGER PRIMARY KEY, " + ACTIVITY_NAME + " TEXT, "
-                + START_TIMESTAMP + " TEXT, " + DURATION + " INTEGER" + ")";
-
-        String CREATE_MARKED_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_MARKED_ANALYTICS + "("
-                + ID_MARKED + " INTEGER PRIMARY KEY, " + ID + " INTEGER, " + MARKED + " INTEGER, "
-                + TIMESTAMP + " TEXT)";
-
         db.setLocale(Locale.UK);
         db.execSQL(CREATE_LOCATIONS_TABLE);
         db.execSQL(CREATE_ACTIVITY_ANALYTICS_TABLE);
@@ -96,18 +95,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String CREATE_MARKED_ANALYTICS_TABLE = "CREATE TABLE IF NOT EXISTS " + TBL_MARKED_ANALYTICS + "("
-                + ID_MARKED + " INTEGER PRIMARY KEY, " + ID + " INTEGER, " + MARKED + " INTEGER, "
-                + TIMESTAMP + " TEXT)";
 
-        if (newVersion == 8) {
-            //and add a new table
-            db.execSQL(CREATE_MARKED_ANALYTICS_TABLE);
+        //for sanity, try and create the missing tables
+        db.execSQL(CREATE_MARKED_ANALYTICS_TABLE);
+        db.execSQL(CREATE_ACTIVITY_ANALYTICS_TABLE);
 
-            if (oldVersion <= 6) {
-                //add the extra column
-                db.execSQL("ALTER TABLE " + TBL_CLICKS + " ADD COLUMN " + MARKED + " INTEGER DEFAULT 0");
-            }
+        //just add the missing column
+        if (oldVersion <= 6) {
+            //add the extra column
+            db.execSQL("ALTER TABLE " + TBL_CLICKS + " ADD COLUMN " + MARKED + " INTEGER DEFAULT 0");
         }
     }
 
@@ -341,8 +337,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<Click> selectLast7Days(){ //this does not include the current day's data
         ArrayList<Click> allClicks = new ArrayList<>();
         try{
-//            String sql = "SELECT strftime('%Y', date(t.timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(t.timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(t.timestamp, 'unixepoch', 'localtime')) AS day, t.action, t.clicks, t.timestamp FROM (SELECT " + TIMESTAMP + " as timestamp, " + NUMBER + " AS action, COUNT(" + NUMBER + ") AS clicks FROM " + TBL_CLICKS + " WHERE date(" + TIMESTAMP + ", 'unixepoch', 'localtime') BETWEEN date('now', '-7 days', 'localtime') AND date('now', '-1 day', 'localtime') GROUP BY " + NUMBER + ", date(" + TIMESTAMP + ", 'unixepoch', 'localtime') ORDER BY " + TIMESTAMP + " ASC) AS t ORDER BY year, month, day, action";
-
             String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
                     "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '1' THEN 1 ELSE 0 END) total_up_unmarked, " +

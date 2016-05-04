@@ -184,7 +184,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String[] values = new String[6];
         try{
             String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
-                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch', 'localtime') as click_date, COUNT(*) AS total_clicks, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
                     "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' and " + NUMBER + " = '1' THEN 1 ELSE 0 END) up_unmarked_count, " +
@@ -225,7 +225,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String[] values = new String[6];
         try{
             String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
-                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch', 'localtime') as click_date, COUNT(*) AS total_clicks, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
                     "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' and " + NUMBER + " = '2' THEN 1 ELSE 0 END) down_unmarked_count, " +
@@ -264,7 +264,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String[] values = new String[6];
         try{
             String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
-                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch', 'localtime') as click_date, COUNT(*) AS total_clicks, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
                     "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " + TIMESTAMP +
                     " FROM " + TBL_CLICKS + " GROUP BY DATE(click_date) ORDER BY total_unmarked DESC, click_date DESC LIMIT 1";
@@ -301,7 +301,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String[] values = new String[6];
         try{
             String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
-                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch', 'localtime') as click_date, COUNT(*) AS total_clicks, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
                     "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " + TIMESTAMP +
                     " FROM " + TBL_CLICKS + " GROUP BY DATE(click_date) ORDER BY total_unmarked ASC, click_date DESC LIMIT 1";
@@ -338,7 +338,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ArrayList<Click> allClicks = new ArrayList<>();
         try{
             String sql = "SELECT strftime('%Y', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS year, strftime('%m', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS month, strftime('%d', date(" + TIMESTAMP + ", 'unixepoch', 'localtime')) AS day, " +
-                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch', 'localtime') as click_date, COUNT(*) AS total_clicks, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '1' THEN 1 ELSE 0 END) total_up_unmarked, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '2' THEN 1 ELSE 0 END) total_down_unmarked, " +
                     "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " + TIMESTAMP + " " +
@@ -376,7 +376,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     "CASE WHEN t.total_up_unmarked < t.total_down_unmarked THEN 1 ELSE 0 END down_day, " +
                     "CASE WHEN t.total_up_unmarked = t.total_down_unmarked THEN 1 ELSE 0 END equal_day, t.total_unmarked, t.total_marked, t.click_timestamp " +
                     "FROM (SELECT strftime('%Y', date(click_timestamp, 'unixepoch', 'localtime')) AS year, strftime('%m', date(click_timestamp, 'unixepoch', 'localtime')) AS month, strftime('%d', date(click_timestamp, 'unixepoch', 'localtime')) AS day, " +
-                    "datetime(" + TIMESTAMP + ",'unixepoch') as click_date, COUNT(*) AS total_clicks, " +
+                    "datetime(" + TIMESTAMP + ",'unixepoch', 'localtime') as click_date, COUNT(*) AS total_clicks, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' THEN 1 ELSE 0 END) total_unmarked, " +
                     "SUM(CASE WHEN " + MARKED + " = '1' THEN 1 ELSE 0 END) total_marked, " +
                     "SUM(CASE WHEN " + MARKED + " = '0' AND " + NUMBER + " = '1' THEN 1 ELSE 0 END) total_up_unmarked, " +
@@ -581,7 +581,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 if (isFileCreated) {
                     PrintWriter printWriter = new PrintWriter(new FileWriter(myFile));
                     printWriter.println(TBL_CLICKS + "@" + Utils.getTimestamp());
-                    printWriter.println(ID + "," + NUMBER + "," + LAT + "," + LON + "," + ACC + "," + ADDRESS + "," + TIMESTAMP);
+                    printWriter.println(ID + "," + NUMBER + "," + LAT + "," + LON + "," + ACC + "," + ADDRESS + "," + TIMESTAMP + "," + MARKED);
 
                     try {
                         String sql = "SELECT * FROM " + TBL_CLICKS + " ORDER BY " + ID;
@@ -590,8 +590,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                         try {
                             if (cursor.moveToFirst()) {
+                                int count = cursor.getColumnCount();
                                 do {
-                                    printWriter.println(cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getDouble(2) + "," + cursor.getDouble(3) + "," + cursor.getDouble(4) + "," + cursor.getString(5).replaceAll("\\n", " ") + "," + cursor.getLong(6));
+                                    if (count == 7)
+                                        printWriter.println(cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getDouble(2) + "," + cursor.getDouble(3) + "," + cursor.getDouble(4) + "," + cursor.getString(5).replaceAll("\\n", " ") + "," + cursor.getLong(6));
+                                    else
+                                        printWriter.println(cursor.getInt(0) + "," + cursor.getInt(1) + "," + cursor.getDouble(2) + "," + cursor.getDouble(3) + "," + cursor.getDouble(4) + "," + cursor.getString(5).replaceAll("\\n", " ") + "," + cursor.getLong(6) + "," + cursor.getInt(7));
                                 }
                                 while (cursor.moveToNext());
                             }
@@ -756,18 +760,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         address = "";
 
                         //the damn split on the address comma :)
-                        if (row.length == 7) {
+                        if (row.length == 8) {
                             values.put(ADDRESS, row[5]);
                             values.put(TIMESTAMP, Long.parseLong(row[6]));
+                            values.put(MARKED, Integer.parseInt(row[7]));
                         } else {
                             int j = 5;
-                            for (; j < row.length - 2; j++) {
+                            for (; j < row.length - 3; j++) {
                                 address += row[j] + ", ";
                             }
                             address += row[j];
                             values.put(ADDRESS, address);
                             values.put(TIMESTAMP, Long.parseLong(row[j + 1]));
-                            Log.e(TAG, row.length + " " + Long.parseLong(row[j + 1]));
+                            values.put(MARKED, Integer.parseInt(row[j + 2]));
                         }
 
                         //insert the values

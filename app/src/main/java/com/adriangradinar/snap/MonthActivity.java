@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -83,7 +84,7 @@ public class MonthActivity extends AppCompatActivity {
                         //up day
                         if (click.getTotalMarked() != 0) {
                             //marked day
-                            upMarkedDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
+                            upMarkedDecorators.add(CalendarDay.from(Integer.valueOf(click.getYear()), Integer.valueOf(click.getDay()), Integer.valueOf(click.getMonth())));
                         } else {
                             //unmarked day
                             upDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
@@ -139,6 +140,9 @@ public class MonthActivity extends AppCompatActivity {
                 materialCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
                     @Override
                     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+
+                        Log.e(TAG, date.toString());
+
                         long timestamp = materialCalendarView.getSelectedDate().getDate().getTime()/1000 + 3600;
                         if(db.countEventsInDayBasedOnTimestamp(timestamp) == 0){
                             Toast.makeText(getApplicationContext(), "Seems like is was an ordinary day with no activity!", Toast.LENGTH_SHORT).show();

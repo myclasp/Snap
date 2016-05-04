@@ -85,8 +85,8 @@ public class MainActivity extends ActivityManagePermission {
         assert button != null;
         button.setOnClickListener(buttonListener);
 
-//        if(Utils.getTimestamp() < 1462924800)
-//            button.setVisibility(View.INVISIBLE);
+        if (Utils.getTimestamp() < 1462924800)
+            button.setVisibility(View.INVISIBLE);
 
         TextView snapTV = (TextView) findViewById(R.id.snapTV);
         assert snapTV != null;

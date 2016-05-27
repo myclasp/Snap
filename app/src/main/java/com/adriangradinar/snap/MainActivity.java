@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,10 +24,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 
-import permission.auron.com.marshmallowpermissionhelper.ActivityManagePermission;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class MainActivity extends ActivityManagePermission {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int LIMIT = 20;
@@ -36,7 +36,7 @@ public class MainActivity extends ActivityManagePermission {
     private long currentTimestamp;
     private Button button;
     private ProgressBar spinner;
-    private Geocoder geocoder;
+    private transient Geocoder geocoder;
     View.OnClickListener buttonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -93,9 +93,9 @@ public class MainActivity extends ActivityManagePermission {
         snapTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                db.readCSV(getApplicationContext(), R.raw.stats_4);
-//                db.deleteDuplicates();
-//                db.logClicks();
+                db.readCSV(getApplicationContext(), R.raw.stats_6);
+                db.deleteDuplicates();
+                db.logClicks();
 
 //                startActivity(new Intent(MainActivity.this, HourlyActivity.class));
 //                db.getCurrentMonth();

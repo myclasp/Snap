@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -40,7 +41,7 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
     private final static int FASTEST_TIME_INTERVAL = 500;
     private final static int UPDATE_TIME_INTERVAL = 4000;
     private final static int SLEEP_TIME_INTERVAL = 2000;
-    private final static double DESIRED_ACCURACY = 30; //in meters
+    private final static double DESIRED_ACCURACY = 20; //in meters
     private final static int NUMBER_OF_TRIES = 15;
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation = null;
@@ -55,17 +56,6 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
 
     @Override
     public void onCreate() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Log.e(TAG, "no write permissions have been given!");
-            return;
-        }
 
         if (!(Thread.getDefaultUncaughtExceptionHandler() instanceof CustomExceptionHandler)) {
             Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler(fullPath));
@@ -120,7 +110,7 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, "Connection failed!");
     }
 
@@ -189,12 +179,12 @@ public class LocationService extends Service implements GoogleApiClient.OnConnec
 
                             @Override
                             public void e(Throwable t, String text, Object... args) {
-                                Log.e(TAG, String.format(text, args), t);
+//                                Log.e(TAG, String.format(text, args), t);
                             }
 
                             @Override
                             public void e(String text, Object... args) {
-                                Log.e(TAG, String.format(text, args));
+//                                Log.e(TAG, String.format(text, args));
                             }
                         })
                         .minConsumerCount(1)//always keep at least one consumer alive

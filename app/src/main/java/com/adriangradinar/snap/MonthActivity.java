@@ -79,12 +79,14 @@ public class MonthActivity extends AppCompatActivity {
                 emptyDecorators.clear();
                 emptyMarkedDecorators.clear();
 
+                db.logClicks();
+
                 for (Click click : monthClicks) {
                     if (click.getUpDay() == 1) {
                         //up day
                         if (click.getTotalMarked() != 0) {
                             //marked day
-                            upMarkedDecorators.add(CalendarDay.from(Integer.valueOf(click.getYear()), Integer.valueOf(click.getDay()), Integer.valueOf(click.getMonth())));
+                            upMarkedDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));
                         } else {
                             //unmarked day
                             upDecorators.add(CalendarDay.from(new Date(click.getTimestamp() * 1000)));

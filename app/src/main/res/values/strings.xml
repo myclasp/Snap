@@ -20,7 +20,7 @@
     <string name="action_button_delete_text">Yes, Hide!</string>
     <string name="action_button_restore_text">Yes, Restore!</string>
 
-    <string name="app_version">v0.3.8</string>
+    <string name="app_version">v0.4.0</string>
     <string name="action_icon_description">Icon</string>
     <string name="click_time_textview">time</string>
     <string name="click_item_location_textview">Location</string>

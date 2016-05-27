@@ -54,14 +54,6 @@ public class Click {
 
     /**
      * This constructor is used for the Last 7 days view
-     *
-     * @param year
-     * @param month
-     * @param day
-     * @param totalUpUnmarked
-     * @param totalDownUnmarked
-     * @param totalMarked
-     * @param timestamp
      */
     public Click(String year, String month, String day, int totalUpUnmarked, int totalDownUnmarked, int totalMarked, long timestamp) {
         this.year = year;
@@ -75,16 +67,6 @@ public class Click {
 
     /**
      * This constructor is used for the MonthView
-     *
-     * @param year
-     * @param month
-     * @param day
-     * @param upDay
-     * @param downDay
-     * @param equalDay
-     * @param totalUnmarked
-     * @param totalMarked
-     * @param timestamp
      */
     public Click(String year, String month, String day, int upDay, int downDay, int equalDay, int totalUnmarked, int totalMarked, long timestamp) {
         this.year = year;

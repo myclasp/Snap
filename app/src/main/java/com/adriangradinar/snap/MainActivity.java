@@ -41,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (db.countTotalClicks() != 0) {
+
+                //clean up the duplicates
+                db.deleteDuplicates();
+
                 if (Utils.isWifiON(getApplicationContext()) && db.countTotalLocationsWithoutAnAddress() > 0) {
 
                     geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
@@ -93,9 +97,9 @@ public class MainActivity extends AppCompatActivity {
         snapTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.readCSV(getApplicationContext(), R.raw.stats_6);
-                db.deleteDuplicates();
-                db.logClicks();
+//                db.readCSV(getApplicationContext(), R.raw.stats_6);
+//                db.deleteDuplicates();
+//                db.logClicks();
 
 //                startActivity(new Intent(MainActivity.this, HourlyActivity.class));
 //                db.getCurrentMonth();

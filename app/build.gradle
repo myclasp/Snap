@@ -48,9 +48,6 @@ dependencies {
 
     //import a swipe library
     compile "com.daimajia.swipelayout:library:1.2.0@aar"
-
-    //import the permission lib
-    compile 'com.github.ParkSangGwon:TedPermission:v1.0.11'
 }
 
 apply plugin: 'com.google.gms.google-services'

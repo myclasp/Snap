@@ -778,6 +778,14 @@ public class DatabaseHandler extends SQLiteOpenHelper implements Serializable {
                                         colName = "identifier";
                                     } else if (colName.equals("click_total")) {
                                         colName = "state";
+                                        //up click =1
+                                        if (data.equals("1")){
+                                            data = "1";
+                                        }
+                                        // down click =2
+                                        else if (data.equals("2")){
+                                            data = "0";
+                                        }
                                     } else if (colName.equals("click_latitude")) {
                                         colName = "latitude";
                                     } else if (colName.equals("click_longitude")) {

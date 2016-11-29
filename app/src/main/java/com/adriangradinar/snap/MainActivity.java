@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar spinner;
     private transient Geocoder geocoder;
     private String user_ID = "unset";
-    private String serverURL= "http://148.88.227.177:8000";
+    //private String serverURL= "http://148.88.227.177:8000";
+    private String serverURL= "http://scc-clasp.lancs.ac.uk:8000";
 
 
     View.OnClickListener buttonListener = new View.OnClickListener() {
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener loginButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            
+
             // Create Object of Dialog class
             final Dialog login = new Dialog(MainActivity.this);
             // Set GUI of login screen
@@ -119,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
 
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
             //String strSavedMem1 = sharedPreferences.getString("username","d");
-            txtUsername.setText( sharedPreferences.getString("username","test@test.comA") );
-            txtPassword.setText( sharedPreferences.getString("password","passwurd"));
+            txtUsername.setText( sharedPreferences.getString("username","@walk.com") );
+            txtPassword.setText( sharedPreferences.getString("password","password"));
 
 
 

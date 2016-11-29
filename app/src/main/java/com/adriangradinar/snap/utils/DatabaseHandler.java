@@ -11,6 +11,10 @@ import android.util.Log;
 import com.adriangradinar.snap.classes.Click;
 import com.adriangradinar.snap.classes.ClickAddress;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +24,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -733,6 +739,122 @@ public class DatabaseHandler extends SQLiteOpenHelper implements Serializable {
 
         Log.d(TAG, "Marked analytics download completed!");
     }
+
+
+
+
+    //WAS
+    //makes up the moments json object for upload
+    public JSONObject getClicksToUpload() {
+        //printWriter.println(ID + "," + NUMBER + "," + LAT + "," + LON + "," + ACC + "," + ADDRESS + "," + TIMESTAMP + "," + MARKED);
+
+
+            String sql = "SELECT * FROM " + TBL_CLICKS + " WHERE marked_for_deletion < 1  ORDER BY " + ID;
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(sql, null);
+            JSONArray resultSet = new JSONArray();
+
+
+            cursor.moveToFirst();
+            //Log.v("count",  Integer.toString(cursor.getCount()));
+
+            if (cursor.getCount() > 0) {
+
+                while (cursor.isAfterLast() == false) {
+
+                    int totalColumn = cursor.getColumnCount();
+                    JSONObject rowObject = new JSONObject();
+
+                    for (int i = 0; i < totalColumn; i++) {
+                        if (cursor.getColumnName(i) != null) {
+                            try {
+                                if (cursor.getString(i) != null) {
+                                    //Log.d("TAG_NAME", cursor.getString(i));
+
+                                    String colName = cursor.getColumnName(i);
+                                    String data = cursor.getString(i);
+
+                                    if (colName.equals("click_id")) {
+                                        colName = "identifier";
+                                    } else if (colName.equals("click_total")) {
+                                        colName = "state";
+                                    } else if (colName.equals("click_latitude")) {
+                                        colName = "latitude";
+                                    } else if (colName.equals("click_longitude")) {
+                                        colName = "longitude";
+                                    } else if (colName.equals("click_accuracy")) {
+                                        colName = "accuracy";
+                                    } else if (colName.equals("click_timestamp")) {
+                                        colName = "timestamp";
+                                        Date date = new Date ();
+                                        date.setTime(Long.parseLong(cursor.getString(i))*1000);
+                                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
+                                        data = dateFormat.format(date);
+                                        //data = date.toString();
+                                    }
+
+
+
+//
+//                                    private static final String TBL_CLICKS = "tbl_clicks";
+//                                    private static final String ID = "click_id";
+//                                    private static final String NUMBER = "click_total"; //1 or 2
+//                                    private static final String LAT = "click_latitude";
+//                                    private static final String LON = "click_longitude";
+//                                    private static final String ACC = "click_accuracy";
+//                                    private static final String ADDRESS = "click_address";
+//                                    private static final String TIMESTAMP = "click_timestamp";
+//                                    private static final String MARKED = "marked_for_deletion"; // 0 or 1
+
+
+
+
+                                    if (!colName.equals("click_address") && !colName.equals("marked_for_deletion")) {
+                                        rowObject.put(colName, data);
+                                    }
+
+                                } else {
+                                    rowObject.put(cursor.getColumnName(i), "");
+                                }
+                            } catch (Exception e) {
+                                Log.d("TAG_NAME", e.getMessage());
+                            }
+                        }
+                    }
+                    resultSet.put(rowObject);
+                    cursor.moveToNext();
+                }
+
+
+
+            }
+        else{
+
+            }
+        cursor.close();
+
+        JSONObject moments = new JSONObject();
+        try {
+            moments.put("moments", resultSet);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("data", moments.toString());
+        return moments;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void readCSV(Context context, int file) {
         String address;

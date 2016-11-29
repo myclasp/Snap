@@ -48,6 +48,9 @@ dependencies {
 
     //import a swipe library
     compile "com.daimajia.swipelayout:library:1.2.0@aar"
+
+    //import volley
+    compile 'com.android.volley:volley:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

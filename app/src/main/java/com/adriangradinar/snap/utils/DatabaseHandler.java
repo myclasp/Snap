@@ -796,7 +796,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements Serializable {
                                         colName = "timestamp";
                                         Date date = new Date ();
                                         date.setTime(Long.parseLong(cursor.getString(i))*1000);
-                                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
+                                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
                                         data = dateFormat.format(date);
                                         //data = date.toString();
                                     }
